@@ -19,6 +19,7 @@
     </prerequisites>
     <modules>
         <module>muck-service</module>
+        <module>muck-webapp</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
