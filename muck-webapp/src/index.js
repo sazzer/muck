@@ -2,6 +2,9 @@ import 'semantic-ui-css/semantic.min.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {I18nextProvider, translate} from 'react-i18next';
+import {ConnectedRouter as Router} from 'connected-react-router';
+import {Provider} from 'react-redux';
+import {history, store} from './redux';
 import i18n from './i18n';
 import App from './App';
 
@@ -16,7 +19,11 @@ const TranslatedAppContents = translate(['muck'], {wait: true})(App);
  */
 const AppWrapper = () => (
     <I18nextProvider i18n={ i18n }>
-        <TranslatedAppContents />
+        <Provider store={store}>
+            <Router history={history}>
+                <TranslatedAppContents />
+            </Router>
+        </Provider>
     </I18nextProvider>
 );
 
