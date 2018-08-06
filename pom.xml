@@ -24,8 +24,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <version.activation>1.2.0</version.activation>
         <version.cucumber>3.0.2</version.cucumber>
         <version.java>1.8</version.java>
+        <version.jaxb>2.3.0</version.jaxb>
         <version.junitJupiter>5.2.0</version.junitJupiter>
         <version.junitPlatform>1.2.0</version.junitPlatform>
         <version.junitVintage>5.2.0</version.junitVintage>
@@ -38,6 +40,21 @@
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-kotlin</artifactId>
                 <version>2.9.6</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.activation</groupId>
+                <artifactId>javax.activation</artifactId>
+                <version>${version.activation}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>${version.jaxb}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${version.jaxb}</version>
             </dependency>
             <dependency>
                 <groupId>commons-jxpath</groupId>
@@ -68,6 +85,11 @@
                 <groupId>io.mockk</groupId>
                 <artifactId>mockk</artifactId>
                 <version>1.8.5</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${version.jaxb}</version>
             </dependency>
             <dependency>
                 <groupId>net.rakugakibox.spring.boot</groupId>
@@ -225,6 +247,11 @@
                         <sortProperties>true</sortProperties>
                         <nrOfIndentSpace>4</nrOfIndentSpace>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>dockerfile-maven-plugin</artifactId>
+                    <version>1.4.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>

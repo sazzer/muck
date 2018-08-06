@@ -1,0 +1,22 @@
+version: '3'
+services:
+    muck-postgres:
+        image: postgres
+        ports:
+            - "127.0.0.1:5432:5432"
+        environment:
+            POSTGRES_DB: muck
+            POSTGRES_USER: muck
+            POSTGRES_PASSWORD: muck
+    muck-service:
+        image: muck/service:0.0.1-SNAPSHOT
+        links:
+            - muck-postgres:postgres
+        ports:
+            - "127.0.0.1:8080:8080"
+        environment:
+            PG_URI: jdbc:postgresql://postgres:5432/muck?user=muck&password=muck
+    muck-webapp:
+        image: muck/webapp:0.0.1-SNAPSHOT
+        ports: 
+            - "127.0.0.1:8000:80"
