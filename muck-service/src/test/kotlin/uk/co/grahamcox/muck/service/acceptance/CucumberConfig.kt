@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
+import uk.co.grahamcox.muck.service.acceptance.database.DatabaseCleaner
 import uk.co.grahamcox.muck.service.acceptance.requester.RequesterConfig
 
 /**
@@ -16,6 +17,7 @@ import uk.co.grahamcox.muck.service.acceptance.requester.RequesterConfig
 class CucumberConfig(context: GenericApplicationContext) {
     init {
         beans {
+            bean<DatabaseCleaner>()
         }.initialize(context)
     }
 }
