@@ -5,7 +5,7 @@ import {ConnectedRouter as Router} from 'connected-react-router';
 import {Provider} from 'react-redux';
 import {history, store} from './redux';
 import i18n from './i18n';
-import App from './App';
+import App from './ui/App';
 
 /**
  * The contents of the app, wrapped in the translations layer
