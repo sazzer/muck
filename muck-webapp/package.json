@@ -20,9 +20,18 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "devDependencies": {
-    "flow-bin": "^0.77.0"
+    "@storybook/addon-actions": "^3.4.10",
+    "@storybook/addon-console": "^1.0.4",
+    "@storybook/addon-knobs": "^3.4.10",
+    "@storybook/addon-links": "^3.4.10",
+    "@storybook/addons": "^3.4.10",
+    "@storybook/react": "^3.4.10",
+    "flow-bin": "^0.77.0",
+    "storybook-addon-jsx": "^5.4.0"
   }
 }
