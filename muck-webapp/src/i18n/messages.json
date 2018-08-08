@@ -1,5 +1,16 @@
 {
   "page": {
-    "title": "MucK"
+    "title": "MucK",
+    "header": {
+      "encyclopedia": {
+        "menu": "Encyclopedia",
+        "categories": {
+          "races": "Races",
+          "abilities": "Abilities",
+          "skills": "Skills",
+          "feats": "Feats"
+        }
+      }
+    }
   }
 }
