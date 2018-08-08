@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LandingArea Renders correctly 1`] = `
+<div>
+  <Header
+    as="h3"
+    dividing={true}
+  >
+    <Interpolate
+      className=""
+      i18nKey="page.landing.title"
+    />
+  </Header>
+  <Image
+    as="img"
+    fluid={true}
+    src="/landingPage.jpg"
+    ui={true}
+  />
+  <p>
+    <Interpolate
+      className=""
+      i18nKey="page.landing.blurb"
+    />
+  </p>
+</div>
+`;

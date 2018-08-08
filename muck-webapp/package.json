@@ -31,7 +31,10 @@
     "@storybook/addon-links": "^3.4.10",
     "@storybook/addons": "^3.4.10",
     "@storybook/react": "^3.4.10",
+    "enzyme": "^3.4.0",
+    "enzyme-adapter-react-16": "^1.2.0",
     "flow-bin": "^0.77.0",
+    "jest-enzyme": "^6.0.3",
     "storybook-addon-jsx": "^5.4.0"
   }
 }
