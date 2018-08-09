@@ -1,5 +1,7 @@
 package uk.co.grahamcox.muck.service.database
 
+import org.neo4j.driver.v1.Driver
+import org.neo4j.driver.v1.GraphDatabase
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
 import org.neo4j.kernel.configuration.BoltConnector
@@ -66,16 +68,17 @@ class EmbeddedNeo4j(val address: String) : InitializingBean, DisposableBean {
  */
 @Configuration
 class DatabaseConfig {
-    /** The port to listen on. 0 means to pick a random port */
-    @Value("\${muck.database.embedded.port:0}")
-    private lateinit var port: String
+    companion object {
+        /** The logger to use */
+        private val LOG = LoggerFactory.getLogger(DatabaseConfig::class.java)
+    }
 
     /**
      * The embedded Neo4J database
      */
     @Bean
-    @ConditionalOnProperty(value = "muck.database.embedded.active", havingValue = "true")
-    fun neo4j(): EmbeddedNeo4j {
+    @ConditionalOnProperty(value = ["muck.database.embedded.active"], havingValue = "true")
+    fun neo4j(@Value("\${muck.database.embedded.port:0}") port: String): EmbeddedNeo4j {
         val address = when (port) {
             "0" -> {
                 val randomPort = SocketUtils.findAvailableTcpPort()
@@ -84,5 +87,33 @@ class DatabaseConfig {
             else -> "localhost:$port"
         }
         return EmbeddedNeo4j(address)
+    }
+
+    /**
+     * Bolt Connection for the Embedded Neo4J
+     */
+    @Bean
+    @ConditionalOnProperty(value = ["muck.database.embedded.active"], havingValue = "true")
+    fun embeddedDriver(embeddedNeo4j: EmbeddedNeo4j) = buildDriver("bolt://${embeddedNeo4j.address}")
+
+    /**
+     * Bolt Connection for the External Neo4J
+     */
+    @Bean
+    @ConditionalOnProperty(value = ["neo4j.address"])
+    fun externalDriver(@Value("\${neo4j.address") address: String) = buildDriver(address)
+
+    /**
+     * Expose the created Neo4J Driver on a constant name
+     */
+    @Bean
+    fun neo4j(neo4j: Driver) = neo4j
+
+    /**
+     * Build the Neo4J driver for the given address
+     */
+    private fun buildDriver(address: String): Driver {
+        LOG.info("Creating Neo4J connection to {}", address)
+        return GraphDatabase.driver(address)
     }
 }
