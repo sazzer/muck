@@ -32,6 +32,7 @@
         <version.junitPlatform>1.2.0</version.junitPlatform>
         <version.junitVintage>5.2.0</version.junitVintage>
         <version.kotlin>1.2.60</version.kotlin>
+        <version.neo4j>3.4.5</version.neo4j>
         <version.springBoot>2.0.4.RELEASE</version.springBoot>
     </properties>
     <dependencyManagement>
@@ -120,6 +121,16 @@
                 <groupId>org.junit.vintage</groupId>
                 <artifactId>junit-vintage-engine</artifactId>
                 <version>${version.junitVintage}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.neo4j</groupId>
+                <artifactId>neo4j</artifactId>
+                <version>${version.neo4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.neo4j</groupId>
+                <artifactId>neo4j-bolt</artifactId>
+                <version>${version.neo4j}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>

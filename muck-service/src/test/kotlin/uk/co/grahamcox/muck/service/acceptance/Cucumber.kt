@@ -2,7 +2,6 @@ package uk.co.grahamcox.muck.service.acceptance
 
 import cucumber.api.CucumberOptions
 import cucumber.api.junit.Cucumber
-import org.junit.Ignore
 import org.junit.runner.RunWith
 
 /**
