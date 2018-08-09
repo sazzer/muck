@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.support.ResourcePatternResolver
 import org.springframework.util.FileSystemUtils
 import org.springframework.util.SocketUtils
 import java.nio.file.Files
@@ -116,4 +117,13 @@ class DatabaseConfig {
      */
     @Bean
     fun neo4jHealthcheck(neo4j: Driver) = Neo4jHealthcheck(neo4j)
+
+    /**
+     * Load the Neo4J Schema from the files containing Cypher queries
+     */
+    @Bean
+    fun neo4jSchemaLoader(neo4j: Driver, resourcePatternResolver: ResourcePatternResolver) =
+            Neo4jSchemaLoader(resourcePatternResolver,
+                    "classpath*:/neo4j/schema/*.cypher",
+                    neo4j)
 }
