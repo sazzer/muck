@@ -1,51 +1,65 @@
 package uk.co.grahamcox.muck.service.database
 
+import org.neo4j.driver.v1.Driver
+import org.neo4j.driver.v1.GraphDatabase
+import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.graphdb.factory.GraphDatabaseFactory
+import org.neo4j.kernel.configuration.BoltConnector
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.BeanCreationException
+import org.springframework.beans.factory.DisposableBean
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import ru.yandex.qatools.embed.postgresql.EmbeddedPostgres
-import ru.yandex.qatools.embed.postgresql.distribution.Version
+import org.springframework.util.FileSystemUtils
+import org.springframework.util.SocketUtils
+import java.nio.file.Files
+import java.nio.file.Path
+
 
 /**
- * Wrapper around the Postgres Server
+ * Wrapper around the embedded Neo4J
  */
-class PostgresWrapper {
+class EmbeddedNeo4j(val address: String) : InitializingBean, DisposableBean {
     companion object {
         /** The logger to use */
-        private val LOG = LoggerFactory.getLogger(PostgresWrapper::class.java)
+        private val LOG = LoggerFactory.getLogger(EmbeddedNeo4j::class.java)
     }
 
-    /** The postgres server  */
-    private val postgres = EmbeddedPostgres(Version.V10_3)
+    /** The temp directory for the database */
+    private lateinit var directory: Path
 
-    @Value("\${muck.database.embedded.port:0}")
-    private lateinit var port: Integer
-
-    /** The database connection URL */
-    lateinit var url: String
+    /** The actual running database */
+    private lateinit var neo4j: GraphDatabaseService
 
     /**
-     * Start the server
+     * Instantiate the Neo4J database
      */
-    fun start() {
-        url = when (port) {
-            null -> throw BeanCreationException("No port number set")
-            Integer(0) -> postgres.start()
-            else -> postgres.start("localhost", port.toInt(), "muck")
-        }
-        LOG.debug("Started Postgres server on {}", url)
+    override fun afterPropertiesSet() {
+        directory = Files.createTempDirectory("muck")
+
+        val bolt = BoltConnector()
+
+        neo4j = GraphDatabaseFactory()
+                .newEmbeddedDatabaseBuilder(directory.toFile())
+                .setConfig( bolt.type, "BOLT" )
+                .setConfig( bolt.enabled, "true" )
+                .setConfig( bolt.address, address )
+                .newGraphDatabase()
+
+        LOG.info("Starting Neo4J on {}, based in {}", address, directory)
     }
 
     /**
-     * Stop the server
+     * Destroy the Neo4J database
      */
-    fun stop() {
-        postgres.stop()
-        LOG.debug("Stopping Postgres server on {}", url)
+    override fun destroy() {
+        LOG.info("Stopping Neo4J on {}, based in {}", address, directory)
+
+        neo4j.shutdown()
+
+        FileSystemUtils.deleteRecursively(directory)
     }
 }
 
@@ -53,19 +67,53 @@ class PostgresWrapper {
  * Spring configuration for the database
  */
 @Configuration
-@ConditionalOnProperty(value = "muck.database.embedded.active", havingValue = "true")
 class DatabaseConfig {
-    /**
-     * The Embedded Postgres server
-     */
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    fun embeddedPostgres() = PostgresWrapper()
+    companion object {
+        /** The logger to use */
+        private val LOG = LoggerFactory.getLogger(DatabaseConfig::class.java)
+    }
 
     /**
-     * The data source to use
+     * The embedded Neo4J database
      */
     @Bean
-    fun datasource(postgres: PostgresWrapper) = DataSourceBuilder.create()
-            .url(postgres.url)
-            .build()
+    @ConditionalOnProperty(value = ["muck.database.embedded.active"], havingValue = "true")
+    fun neo4j(@Value("\${muck.database.embedded.port:0}") port: String): EmbeddedNeo4j {
+        val address = when (port) {
+            "0" -> {
+                val randomPort = SocketUtils.findAvailableTcpPort()
+                "localhost:$randomPort"
+            }
+            else -> "localhost:$port"
+        }
+        return EmbeddedNeo4j(address)
+    }
+
+    /**
+     * Bolt Connection for the Embedded Neo4J
+     */
+    @Bean
+    @ConditionalOnProperty(value = ["muck.database.embedded.active"], havingValue = "true")
+    fun embeddedDriver(embeddedNeo4j: EmbeddedNeo4j) = buildDriver("bolt://${embeddedNeo4j.address}")
+
+    /**
+     * Bolt Connection for the External Neo4J
+     */
+    @Bean
+    @ConditionalOnProperty(value = ["neo4j.address"])
+    fun externalDriver(@Value("\${neo4j.address}") address: String) = buildDriver(address)
+
+    /**
+     * Build the Neo4J driver for the given address
+     */
+    private fun buildDriver(address: String): Driver {
+        LOG.info("Creating Neo4J connection to {}", address)
+        return GraphDatabase.driver(address)
+    }
+
+    /**
+     * The Neo4J Healthcheck
+     */
+    @Bean
+    fun neo4jHealthcheck(neo4j: Driver) = Neo4jHealthcheck(neo4j)
 }

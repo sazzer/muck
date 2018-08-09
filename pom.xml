@@ -32,6 +32,7 @@
         <version.junitPlatform>1.2.0</version.junitPlatform>
         <version.junitVintage>5.2.0</version.junitVintage>
         <version.kotlin>1.2.60</version.kotlin>
+        <version.neo4j>3.4.5</version.neo4j>
         <version.springBoot>2.0.4.RELEASE</version.springBoot>
     </properties>
     <dependencyManagement>
@@ -97,11 +98,6 @@
                 <version>2.7.1</version>
             </dependency>
             <dependency>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-core</artifactId>
-                <version>5.1.4</version>
-            </dependency>
-            <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-reflect</artifactId>
                 <version>${version.kotlin}</version>
@@ -127,23 +123,23 @@
                 <version>${version.junitVintage}</version>
             </dependency>
             <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>42.2.4</version>
+                <groupId>org.neo4j</groupId>
+                <artifactId>neo4j</artifactId>
+                <version>${version.neo4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.neo4j</groupId>
+                <artifactId>neo4j-bolt</artifactId>
+                <version>${version.neo4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.neo4j.driver</groupId>
+                <artifactId>neo4j-java-driver</artifactId>
+                <version>1.4.4</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-actuator</artifactId>
-                <version>${version.springBoot}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-data-jpa</artifactId>
-                <version>${version.springBoot}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-jdbc</artifactId>
                 <version>${version.springBoot}</version>
             </dependency>
             <dependency>
@@ -160,11 +156,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-websocket</artifactId>
                 <version>${version.springBoot}</version>
-            </dependency>
-            <dependency>
-                <groupId>ru.yandex.qatools.embed</groupId>
-                <artifactId>postgresql-embedded</artifactId>
-                <version>2.9</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
