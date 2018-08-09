@@ -104,16 +104,16 @@ class DatabaseConfig {
     fun externalDriver(@Value("\${neo4j.address}") address: String) = buildDriver(address)
 
     /**
-     * Expose the created Neo4J Driver on a constant name
-     */
-    @Bean
-    fun neo4j(neo4j: Driver) = neo4j
-
-    /**
      * Build the Neo4J driver for the given address
      */
     private fun buildDriver(address: String): Driver {
         LOG.info("Creating Neo4J connection to {}", address)
         return GraphDatabase.driver(address)
     }
+
+    /**
+     * The Neo4J Healthcheck
+     */
+    @Bean
+    fun neo4jHealthcheck(neo4j: Driver) = Neo4jHealthcheck(neo4j)
 }
