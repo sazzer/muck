@@ -97,11 +97,6 @@
                 <version>2.7.1</version>
             </dependency>
             <dependency>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-core</artifactId>
-                <version>5.1.4</version>
-            </dependency>
-            <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-reflect</artifactId>
                 <version>${version.kotlin}</version>
@@ -127,23 +122,8 @@
                 <version>${version.junitVintage}</version>
             </dependency>
             <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>42.2.4</version>
-            </dependency>
-            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-actuator</artifactId>
-                <version>${version.springBoot}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-data-jpa</artifactId>
-                <version>${version.springBoot}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-jdbc</artifactId>
                 <version>${version.springBoot}</version>
             </dependency>
             <dependency>
@@ -160,11 +140,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-websocket</artifactId>
                 <version>${version.springBoot}</version>
-            </dependency>
-            <dependency>
-                <groupId>ru.yandex.qatools.embed</groupId>
-                <artifactId>postgresql-embedded</artifactId>
-                <version>2.9</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
