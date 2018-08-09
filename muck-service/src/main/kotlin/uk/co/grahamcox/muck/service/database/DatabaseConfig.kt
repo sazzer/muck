@@ -101,7 +101,7 @@ class DatabaseConfig {
      */
     @Bean
     @ConditionalOnProperty(value = ["neo4j.address"])
-    fun externalDriver(@Value("\${neo4j.address") address: String) = buildDriver(address)
+    fun externalDriver(@Value("\${neo4j.address}") address: String) = buildDriver(address)
 
     /**
      * Expose the created Neo4J Driver on a constant name
