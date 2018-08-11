@@ -11,6 +11,6 @@ ENV PORT=8080
 
 ADD ${JAR_FILE} /opt/muck/service.jar
 WORKDIR /opt/muck
-CMD java -Dneo4j.address="$NEO4J_URI" -Dserver.port="$PORT" -Dspring.profiles.active=prod -jar service.jar
+CMD java -Dspring.data.neo4j.uri="$NEO4J_URI" -Dserver.port="$PORT" -Dspring.profiles.active=prod -jar service.jar
 
 HEALTHCHECK CMD curl -f http://localhost:8080/actuator/health || exit 1
