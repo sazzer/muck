@@ -1,5 +1,6 @@
 package uk.co.grahamcox.muck.service.user.dao
 
+import uk.co.grahamcox.muck.service.user.UserData
 import uk.co.grahamcox.muck.service.user.UserId
 import uk.co.grahamcox.muck.service.user.UserResource
 
@@ -13,4 +14,11 @@ interface UserDao {
      * @return the user
      */
     fun getById(id: UserId): UserResource
+
+    /**
+     * Create a User with the given data
+     * @param user The user data to create
+     * @return the created user
+     */
+    fun create(user: UserData): UserResource
 }

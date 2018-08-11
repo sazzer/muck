@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import uk.co.grahamcox.muck.service.database.ResourceNotFoundException
 import uk.co.grahamcox.muck.service.database.query
 import uk.co.grahamcox.muck.service.spring.SpringTestBase
+import uk.co.grahamcox.muck.service.user.Password
+import uk.co.grahamcox.muck.service.user.UserData
 import uk.co.grahamcox.muck.service.user.UserId
 import java.time.Instant
 import java.util.*
@@ -59,8 +61,8 @@ internal class Neo4jUserDaoImplTest : SpringTestBase() {
                 "version" to "versionString",
                 "displayName" to "Graham",
                 "email" to "graham@example.com",
-                "hash" to "aGFzaA==", // "hash"
-                "salt" to "c2FsdA=="
+                "hash" to "hash".toByteArray(),
+                "salt" to "salt".toByteArray()
         ))
 
         val user = userDao.getById(userId)
@@ -73,8 +75,34 @@ internal class Neo4jUserDaoImplTest : SpringTestBase() {
 
                 Executable { Assertions.assertEquals("Graham", user.data.displayName) },
                 Executable { Assertions.assertEquals("graham@example.com", user.data.email) },
-                Executable { Assertions.assertArrayEquals(Base64.getDecoder().decode("aGFzaA=="), user.data.password.hash) },
-                Executable { Assertions.assertArrayEquals(Base64.getDecoder().decode("c2FsdA=="), user.data.password.salt) }
+                Executable { Assertions.assertArrayEquals("hash".toByteArray(), user.data.password.hash) },
+                Executable { Assertions.assertArrayEquals("salt".toByteArray(), user.data.password.salt) }
         )
+    }
+
+    /**
+     * Test creating a new user
+     */
+    @Test
+    fun testCreateUser() {
+        val created = userDao.create(UserData(
+                email = "graham@example.com",
+                displayName = "Graham",
+                password = Password(
+                        hash = "hash".toByteArray(),
+                        salt = "salt".toByteArray()
+                )
+        ))
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals("Graham", created.data.displayName) },
+                Executable { Assertions.assertEquals("graham@example.com", created.data.email) },
+                Executable { Assertions.assertArrayEquals("hash".toByteArray(), created.data.password.hash) },
+                Executable { Assertions.assertArrayEquals("salt".toByteArray(), created.data.password.salt) }
+        )
+
+        val retrieved = userDao.getById(created.identity.id)
+
+        Assertions.assertEquals(created, retrieved)
     }
 }
