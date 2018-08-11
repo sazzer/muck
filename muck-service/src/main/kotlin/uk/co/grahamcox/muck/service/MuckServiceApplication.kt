@@ -3,11 +3,11 @@ package uk.co.grahamcox.muck.service
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Import
-import uk.co.grahamcox.muck.service.database.DatabaseConfig
+import uk.co.grahamcox.muck.service.spring.MuckConfig
 
 @SpringBootApplication
 @Import(
-        DatabaseConfig::class
+        MuckConfig::class
 )
 class MuckServiceApplication
 

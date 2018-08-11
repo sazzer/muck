@@ -16,7 +16,7 @@ fun <T> Driver.exec(block: (Session) -> T) = this.session().use(block)
 /**
  * Execute the given query in a new session
  */
-fun Driver.query(query: String) = this.exec { session ->
-    LOG.debug("Executing query: {}", query)
-    session.run(query)
+fun Driver.query(query: String, params: Map<String, Any?> = mapOf()) = this.exec { session ->
+    LOG.debug("Executing query: {} with params: {}", query, params)
+    session.run(query, params)
 }
