@@ -21,9 +21,5 @@ data class UserModel(
 
         var email: String,
 
-        var displayName: String,
-
-        var passwordHash: ByteArray,
-
-        var passwordSalt: ByteArray
+        var displayName: String
 )

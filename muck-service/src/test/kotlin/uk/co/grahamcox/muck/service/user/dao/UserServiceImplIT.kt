@@ -29,5 +29,5 @@ internal class UserServiceImplIT : SpringTestBase() {
 
         Assertions.assertEquals(userId, e.id)
     }
-    
+
 }

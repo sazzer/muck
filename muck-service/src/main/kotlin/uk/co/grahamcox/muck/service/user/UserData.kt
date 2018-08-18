@@ -8,6 +8,5 @@ package uk.co.grahamcox.muck.service.user
  */
 data class UserData(
         val email: String,
-        val displayName: String,
-        val password: Password
+        val displayName: String
 )
