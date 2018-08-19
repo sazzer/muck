@@ -1,9 +1,11 @@
 package uk.co.grahamcox.muck.service.user.dao
 
-import org.neo4j.ogm.annotation.Id
+import org.neo4j.ogm.annotation.Index
 import org.neo4j.ogm.annotation.NodeEntity
 import org.neo4j.ogm.annotation.Relationship
 import org.neo4j.ogm.annotation.Version
+import org.neo4j.ogm.annotation.typeconversion.Convert
+import org.neo4j.ogm.typeconversion.UuidStringConverter
 import java.time.Instant
 import java.util.*
 
@@ -19,17 +21,18 @@ import java.util.*
  */
 @NodeEntity(label = "USER")
 data class UserModel(
-        @Id
-        var id: UUID? = null,
+        @Convert(UuidStringConverter::class)
+        @Index(primary = true, unique = true)
+        var id: UUID? = UUID.randomUUID(),
 
         @Version
         var version: Long? = null,
 
-        var created: Instant,
-        var updated: Instant,
-        var email: String?,
-        var displayName: String,
+        var created: Instant? = null,
+        var updated: Instant? = null,
+        var email: String? = null,
+        var displayName: String? = null,
 
         @Relationship(type = "LOGIN")
-        var loginProviders: Collection<UserLoginRelationship>
+        var loginProviders: Collection<UserLoginRelationship> = emptyList()
 )

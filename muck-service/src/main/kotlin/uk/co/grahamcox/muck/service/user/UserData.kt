@@ -7,7 +7,7 @@ package uk.co.grahamcox.muck.service.user
  * @property logins The logins this user has at third party providers
  */
 data class UserData(
-        val email: String,
+        val email: String?,
         val displayName: String,
         val logins: Collection<UserLogin>
 )

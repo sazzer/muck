@@ -1,6 +1,7 @@
 package uk.co.grahamcox.muck.service.user.dao
 
 import org.neo4j.ogm.annotation.EndNode
+import org.neo4j.ogm.annotation.Id
 import org.neo4j.ogm.annotation.RelationshipEntity
 import org.neo4j.ogm.annotation.StartNode
 
@@ -13,8 +14,15 @@ import org.neo4j.ogm.annotation.StartNode
  */
 @RelationshipEntity(type = "LOGIN")
 data class UserLoginRelationship(
-        var providerId: String,
-        var displayName: String,
-        @StartNode var user: UserModel,
-        @EndNode var loginProvider: LoginProviderModel
-)
+        var providerId: String? = null,
+        var displayName: String? = null
+) {
+    @Id
+    var id: Long? = null
+
+    @StartNode
+    lateinit var user: UserModel
+
+    @EndNode
+    lateinit var loginProvider: LoginProviderModel
+}

@@ -7,7 +7,7 @@ import java.time.Instant
  */
 data class Identity<out ID : Id<*>>(
         val id: ID,
-        val version: String,
+        val version: Long,
         val created: Instant,
         val updated: Instant
 )

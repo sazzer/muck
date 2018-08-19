@@ -2,6 +2,7 @@ package uk.co.grahamcox.muck.service.spring
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
+import org.neo4j.ogm.cypher.query.DefaultGraphModelRequest
 import org.neo4j.ogm.session.SessionFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -26,5 +27,13 @@ class SpringTestBase {
     @BeforeEach
     fun clearDatabase() {
         sessionFactory.openSession().purgeDatabase()
+    }
+
+    /**
+     * Execute the given query against the database
+     */
+    fun execute(query: String, parameters: Map<String, Any?> = emptyMap()) {
+        val request = DefaultGraphModelRequest(query, parameters)
+        sessionFactory.driver.request().execute(request)
     }
 }
