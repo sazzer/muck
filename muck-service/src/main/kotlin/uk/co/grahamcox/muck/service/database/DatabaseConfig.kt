@@ -111,8 +111,14 @@ class DatabaseConfig {
     }
 
     /**
+     * Build the Neo4J Template to use
+     */
+    @Bean
+    fun neo4jTemplate(driver: Driver) = Neo4jTemplate(driver)
+
+    /**
      * The Neo4J Healthcheck
      */
     @Bean
-    fun neo4jHealthcheck(neo4j: Driver) = Neo4jHealthcheck(neo4j)
+    fun neo4jHealthcheck(neo4jOperations: Neo4jOperations) = Neo4jHealthcheck(neo4jOperations)
 }
