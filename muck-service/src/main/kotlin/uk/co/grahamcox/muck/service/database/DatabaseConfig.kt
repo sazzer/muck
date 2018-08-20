@@ -10,8 +10,10 @@ import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.AdviceMode
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.util.FileSystemUtils
 import org.springframework.util.SocketUtils
 import java.nio.file.Files
@@ -66,6 +68,7 @@ class EmbeddedNeo4j(val address: String) : InitializingBean, DisposableBean {
  * Spring configuration for the database
  */
 @Configuration
+@EnableTransactionManagement(proxyTargetClass = true, mode = AdviceMode.PROXY)
 class DatabaseConfig {
     companion object {
         /** The logger to use */
@@ -114,7 +117,15 @@ class DatabaseConfig {
      * Build the Neo4J Template to use
      */
     @Bean
-    fun neo4jTemplate(driver: Driver) = Neo4jTemplate(driver)
+    fun neo4jTemplate(transactionManager: Neo4jTransactionManager) = Neo4jTemplate(transactionManager)
+
+    /**
+     * Build the Neo4J Transaction Manager to use
+     */
+    @Bean("transactionManager")
+    fun neo4jTransactionManager(driver: Driver): Neo4jTransactionManager {
+        return Neo4jTransactionManager(driver)
+    }
 
     /**
      * The Neo4J Healthcheck

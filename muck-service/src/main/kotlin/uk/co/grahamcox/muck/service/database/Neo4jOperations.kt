@@ -1,6 +1,7 @@
 package uk.co.grahamcox.muck.service.database
 
 import org.neo4j.driver.v1.Record
+import org.neo4j.driver.v1.summary.SummaryCounters
 
 /**
  * Interface describing how to interact with the Neo4J Data store
@@ -31,4 +32,11 @@ interface Neo4jOperations {
      */
     fun <T> query(query: String, params: Map<String, Any?> = emptyMap(), transform: (Record) -> T) : List<T>
 
+    /**
+     * Execute a statement and get the summary of the results
+     * @param query The query to execute
+     * @param params The parameters to the query
+     * @return The result summary
+     */
+    fun execute(query: String, params: Map<String, Any?> = emptyMap()) : SummaryCounters
 }
