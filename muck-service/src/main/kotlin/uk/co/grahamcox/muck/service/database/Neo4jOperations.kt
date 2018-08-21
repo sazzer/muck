@@ -16,6 +16,15 @@ interface Neo4jOperations {
     fun queryOne(query: String, params: Map<String, Any?> = emptyMap()) : Record
 
     /**
+     * Query the database for exactly one record
+     * @param query The query to execute
+     * @param params The parameters to use, if any
+     * @param transform Function to transform the records
+     * @return the single record that matches
+     */
+    fun <T> queryOne(query: String, params: Map<String, Any?> = emptyMap(), transform: (Record) -> T) : T
+
+    /**
      * Execute the given query against the database
      * @param query The query to execute
      * @param params The parameters to the query

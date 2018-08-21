@@ -15,7 +15,6 @@ import java.util.*
 /**
  * Integration test for the UserService
  */
-@Disabled
 internal class UserServiceImplIT : SpringTestBase() {
     /** The test subject */
     @Autowired
@@ -41,10 +40,12 @@ internal class UserServiceImplIT : SpringTestBase() {
     @Test
     fun testGetKnownById() {
         val userId = UserId(UUID.randomUUID())
+        val version = UUID.randomUUID()
         val now = Instant.now()
-        execute("CREATE (u:USER {id:{id}, version:0, created:{now}, updated:{now}, email:{email}, displayName:{displayName}})",
+        execute("CREATE (u:USER {id:{id}, version:{version}, created:{now}, updated:{now}, email:{email}, displayName:{displayName}})",
                 mapOf(
                         "id" to userId.id.toString(),
+                        "version" to version.toString(),
                         "now" to now.toString(),
                         "email" to "graham@example.com",
                         "displayName" to "Graham"
@@ -54,7 +55,7 @@ internal class UserServiceImplIT : SpringTestBase() {
 
         Assertions.assertAll(
                 Executable { Assertions.assertEquals(userId, user.identity.id) },
-                Executable { Assertions.assertEquals(0, user.identity.version) },
+                Executable { Assertions.assertEquals(version, user.identity.version) },
                 Executable { Assertions.assertEquals(now, user.identity.created) },
                 Executable { Assertions.assertEquals(now, user.identity.updated) },
 
@@ -70,12 +71,14 @@ internal class UserServiceImplIT : SpringTestBase() {
     @Test
     fun testGetKnownByIdWithProviders() {
         val userId = UserId(UUID.randomUUID())
+        val version = UUID.randomUUID()
         val now = Instant.now()
         execute("""CREATE (p:LOGIN_PROVIDER {id:"google"})""")
         execute("""CREATE (p:LOGIN_PROVIDER {id:"twitter"})""")
-        execute("CREATE (u:USER {id:{id}, version:0, created:{now}, updated:{now}, email:{email}, displayName:{displayName}})",
+        execute("CREATE (u:USER {id:{id}, version:{version}, created:{now}, updated:{now}, email:{email}, displayName:{displayName}})",
                 mapOf(
                         "id" to userId.id.toString(),
+                        "version" to version.toString(),
                         "now" to now.toString(),
                         "email" to "graham@example.com",
                         "displayName" to "Graham"
@@ -97,7 +100,7 @@ internal class UserServiceImplIT : SpringTestBase() {
 
         Assertions.assertAll(
                 Executable { Assertions.assertEquals(userId, user.identity.id) },
-                Executable { Assertions.assertEquals(0, user.identity.version) },
+                Executable { Assertions.assertEquals(version, user.identity.version) },
                 Executable { Assertions.assertEquals(now, user.identity.created) },
                 Executable { Assertions.assertEquals(now, user.identity.updated) },
 

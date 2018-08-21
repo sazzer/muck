@@ -174,6 +174,20 @@ class Neo4jTransactionManager(private val driver: Driver) : AbstractPlatformTran
     }
 
     /**
+     * Set the given transaction rollback-only. Only called on rollback
+     * if the current transaction participates in an existing one.
+     *
+     * The default implementation throws an IllegalTransactionStateException,
+     * assuming that participating in existing transactions is generally not
+     * supported. Subclasses are of course encouraged to provide such support.
+     * @param status the status representation of the transaction
+     * @throws TransactionException in case of system errors
+     */
+    override fun doSetRollbackOnly(status: DefaultTransactionStatus) {
+        LOG.warn("Need to work out how to implement this properly!")
+    }
+
+    /**
      * Unwrap the given Transaction Status object to get the nested Neo4J Transaction
      */
     private fun unwrapTransaction(status: DefaultTransactionStatus) : Neo4jTransaction {

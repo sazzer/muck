@@ -27,8 +27,19 @@ class Neo4jTemplate(private val transactionManager: Neo4jTransactionManager) : N
      */
     @Transactional
     override fun queryOne(query: String, params: Map<String, Any?>): Record {
+        return queryOne(query, params) { it }
+    }
+
+    /**
+     * Query the database for exactly one record
+     * @param query The query to execute
+     * @param params The parameters to use, if any
+     * @param transform Function to transform the records
+     * @return the single record that matches
+     */
+    override fun <T> queryOne(query: String, params: Map<String, Any?>, transform: (Record) -> T): T {
         return perform(query, params) {
-            it.single()
+            transform(it.single())
         }
     }
 
@@ -40,9 +51,7 @@ class Neo4jTemplate(private val transactionManager: Neo4jTransactionManager) : N
      */
     @Transactional
     override fun query(query: String, params: Map<String, Any?>): List<Record> {
-        return perform(query, params) {
-            it.list()
-        }
+        return query(query, params) { it }
     }
 
     /**
