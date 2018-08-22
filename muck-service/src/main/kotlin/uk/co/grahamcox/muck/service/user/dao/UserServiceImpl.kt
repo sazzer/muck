@@ -8,6 +8,7 @@ import uk.co.grahamcox.muck.service.database.Neo4jOperations
 import uk.co.grahamcox.muck.service.database.ResourceNotFoundException
 import uk.co.grahamcox.muck.service.model.Identity
 import uk.co.grahamcox.muck.service.user.*
+import java.time.Clock
 import java.time.Instant
 import java.util.*
 
@@ -15,7 +16,10 @@ import java.util.*
  * Implementation of the User Service in terms of the Spring Data Repository
  */
 @Transactional
-class UserServiceImpl(private val neo4jOperations: Neo4jOperations) : UserRetriever {
+class UserServiceImpl(
+        private val neo4jOperations: Neo4jOperations,
+        private val clock: Clock
+) : UserService {
     companion object {
         /** The logger to use */
         private val LOG = LoggerFactory.getLogger(UserServiceImpl::class.java)
@@ -26,6 +30,7 @@ class UserServiceImpl(private val neo4jOperations: Neo4jOperations) : UserRetrie
      * @param id The ID of the user
      * @return the user
      */
+    @Transactional
     override fun getById(id: UserId): UserResource {
         val query = """
             MATCH
@@ -55,6 +60,7 @@ class UserServiceImpl(private val neo4jOperations: Neo4jOperations) : UserRetrie
      * @param providerId The ID of the user at the provider
      * @return the user, or null if it couldn't be found
      */
+    @Transactional
     override fun getByProvider(provider: String, providerId: String): UserResource? {
         val query = """
             MATCH
@@ -80,6 +86,57 @@ class UserServiceImpl(private val neo4jOperations: Neo4jOperations) : UserRetrie
     }
 
     /**
+     * Create a new user with the given data
+     */
+    @Transactional
+    override fun create(user: UserData): UserResource {
+        val identity = Identity(
+                id = UserId(UUID.randomUUID()),
+                version = UUID.randomUUID(),
+                created = clock.instant(),
+                updated = clock.instant()
+        )
+
+        neo4jOperations.execute("""
+            CREATE (u:USER {
+                id: {id},
+                version: {version},
+                created: {created},
+                updated: {updated},
+                email: {email},
+                displayName: {displayName}
+            })
+        """, mapOf(
+                "id" to identity.id.id.toString(),
+                "version" to identity.version.toString(),
+                "created" to identity.created.toString(),
+                "updated" to identity.updated.toString(),
+                "email" to user.email,
+                "displayName" to user.displayName
+        ))
+
+        user.logins.forEach { login ->
+            neo4jOperations.execute("MERGE (provider:LOGIN_PROVIDER {id: {provider}})", mapOf(
+                    "provider" to login.provider
+            ))
+            neo4jOperations.execute("""
+            MATCH
+                (u:USER {id:{userId}}),
+                (p:LOGIN_PROVIDER {id:{provider}})
+            CREATE
+                (u)-[:LOGIN {providerId:{providerId}, displayName:{displayName}}]->(p)
+            """, mapOf(
+                    "userId" to identity.id.id.toString(),
+                    "provider" to login.provider,
+                    "providerId" to login.providerId,
+                    "displayName" to login.displayName
+            ))
+        }
+
+        return UserResource(identity, user)
+    }
+
+    /**
      * Parse the given Record as a user result
      * @param record The record to parse
      * @return The user resource
@@ -95,7 +152,7 @@ class UserServiceImpl(private val neo4jOperations: Neo4jOperations) : UserRetrie
                     providerId = login.get("providerId").asString(),
                     displayName = login.get("displayName").asString()
             )
-        }
+        }.toSet()
 
         return UserResource(
                 identity = Identity(

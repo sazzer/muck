@@ -9,5 +9,5 @@ package uk.co.grahamcox.muck.service.user
 data class UserData(
         val email: String?,
         val displayName: String,
-        val logins: Collection<UserLogin>
+        val logins: Set<UserLogin>
 )

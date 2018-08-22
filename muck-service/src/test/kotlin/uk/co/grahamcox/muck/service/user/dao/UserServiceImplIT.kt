@@ -7,6 +7,7 @@ import org.junit.jupiter.api.function.Executable
 import org.springframework.beans.factory.annotation.Autowired
 import uk.co.grahamcox.muck.service.database.ResourceNotFoundException
 import uk.co.grahamcox.muck.service.spring.SpringTestBase
+import uk.co.grahamcox.muck.service.user.UserData
 import uk.co.grahamcox.muck.service.user.UserId
 import uk.co.grahamcox.muck.service.user.UserLogin
 import java.time.Instant
@@ -173,5 +174,86 @@ internal class UserServiceImplIT : SpringTestBase() {
                 Executable { Assertions.assertTrue(user.data.logins.contains(UserLogin("google", "123", "graham@example.com"))) },
                 Executable { Assertions.assertTrue(user.data.logins.contains(UserLogin("twitter", "987", "@grahamexample"))) }
         )
+    }
+
+    /**
+     * Test creating a user
+     */
+    @Test
+    fun testCreateSimpleUser() {
+        val created = userServiceImpl.create(UserData(
+                email = "graham@example.com",
+                displayName = "Graham",
+                logins = emptySet()
+        ))
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals("graham@example.com", created.data.email) },
+                Executable { Assertions.assertEquals("Graham", created.data.displayName) },
+                Executable { Assertions.assertEquals(0, created.data.logins.size) }
+        )
+
+        val loaded = userServiceImpl.getById(created.identity.id)
+
+        Assertions.assertEquals(created, loaded)
+    }
+
+    /**
+     * Test creating a user that has logins at third party providers, where the provider nodes don't exist
+     */
+    @Test
+    fun testCreateUserWithLogins() {
+        val created = userServiceImpl.create(UserData(
+                email = "graham@example.com",
+                displayName = "Graham",
+                logins = setOf(
+                        UserLogin("google", "123", "graham@example.com"),
+                        UserLogin("twitter", "987", "@grahamexample")
+                )
+        ))
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals("graham@example.com", created.data.email) },
+                Executable { Assertions.assertEquals("Graham", created.data.displayName) },
+                Executable { Assertions.assertEquals(2, created.data.logins.size) },
+
+                Executable { Assertions.assertTrue(created.data.logins.contains(UserLogin("google", "123", "graham@example.com"))) },
+                Executable { Assertions.assertTrue(created.data.logins.contains(UserLogin("twitter", "987", "@grahamexample"))) }
+        )
+
+        val loaded = userServiceImpl.getById(created.identity.id)
+
+        Assertions.assertEquals(created, loaded)
+    }
+
+    /**
+     * Test creating a user that has logins at third party providers, where the provider nodes already exist
+     */
+    @Test
+    fun testCreateUserWithLoginsExistingProviders() {
+        execute("""CREATE (p:LOGIN_PROVIDER {id:"google"})""")
+        execute("""CREATE (p:LOGIN_PROVIDER {id:"twitter"})""")
+
+        val created = userServiceImpl.create(UserData(
+                email = "graham@example.com",
+                displayName = "Graham",
+                logins = setOf(
+                        UserLogin("google", "123", "graham@example.com"),
+                        UserLogin("twitter", "987", "@grahamexample")
+                )
+        ))
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals("graham@example.com", created.data.email) },
+                Executable { Assertions.assertEquals("Graham", created.data.displayName) },
+                Executable { Assertions.assertEquals(2, created.data.logins.size) },
+
+                Executable { Assertions.assertTrue(created.data.logins.contains(UserLogin("google", "123", "graham@example.com"))) },
+                Executable { Assertions.assertTrue(created.data.logins.contains(UserLogin("twitter", "987", "@grahamexample"))) }
+        )
+
+        val loaded = userServiceImpl.getById(created.identity.id)
+
+        Assertions.assertEquals(created, loaded)
     }
 }

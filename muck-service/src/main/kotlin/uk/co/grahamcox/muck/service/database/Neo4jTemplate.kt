@@ -1,5 +1,6 @@
 package uk.co.grahamcox.muck.service.database
 
+import org.apache.commons.lang3.builder.ToStringBuilder
 import org.neo4j.driver.v1.Record
 import org.neo4j.driver.v1.StatementResult
 import org.neo4j.driver.v1.summary.SummaryCounters
@@ -77,7 +78,9 @@ class Neo4jTemplate(private val transactionManager: Neo4jTransactionManager) : N
     @Transactional
     override fun execute(query: String, params: Map<String, Any?>): SummaryCounters {
         return perform(query, params) {
-            it.consume().counters()
+            val counters = it.consume().counters()
+            LOG.debug("Query result: {}", ToStringBuilder.reflectionToString(counters))
+            counters
         }
     }
 
