@@ -10,4 +10,12 @@ interface UserRetriever {
      * @return the user
      */
     fun getById(id: UserId) : UserResource
+
+    /**
+     * Get the user with the given ID at the given Provider
+     * @param provider The provider
+     * @param providerId The ID of the user at the provider
+     * @return the user, or null if it couldn't be found
+     */
+    fun getByProvider(provider: String, providerId: String) : UserResource?
 }

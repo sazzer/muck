@@ -35,7 +35,7 @@ internal class UserServiceImplIT : SpringTestBase() {
     }
 
     /**
-     * Test gettign a known user with no login providers
+     * Test getting a known user with no login providers
      */
     @Test
     fun testGetKnownById() {
@@ -97,6 +97,68 @@ internal class UserServiceImplIT : SpringTestBase() {
                 ))
 
         val user = userServiceImpl.getById(userId)
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(userId, user.identity.id) },
+                Executable { Assertions.assertEquals(version, user.identity.version) },
+                Executable { Assertions.assertEquals(now, user.identity.created) },
+                Executable { Assertions.assertEquals(now, user.identity.updated) },
+
+                Executable { Assertions.assertEquals("graham@example.com", user.data.email) },
+                Executable { Assertions.assertEquals("Graham", user.data.displayName) },
+                Executable { Assertions.assertEquals(2, user.data.logins.size) },
+
+                Executable { Assertions.assertTrue(user.data.logins.contains(UserLogin("google", "123", "graham@example.com"))) },
+                Executable { Assertions.assertTrue(user.data.logins.contains(UserLogin("twitter", "987", "@grahamexample"))) }
+        )
+    }
+
+    /**
+     * Test getting an unknown user by Provider ID
+     */
+    @Test
+    fun testGetUnknownByProviderId() {
+        val user = userServiceImpl.getByProvider("google", "123")
+
+        Assertions.assertNull(user)
+    }
+
+    /**
+     * Test getting a known user by login provider
+     */
+    @Test
+    fun testGetKnownByProvider() {
+        val userId = UserId(UUID.randomUUID())
+        val version = UUID.randomUUID()
+        val now = Instant.now()
+        execute("""CREATE (p:LOGIN_PROVIDER {id:"google"})""")
+        execute("""CREATE (p:LOGIN_PROVIDER {id:"twitter"})""")
+        execute("CREATE (u:USER {id:{id}, version:{version}, created:{now}, updated:{now}, email:{email}, displayName:{displayName}})",
+                mapOf(
+                        "id" to userId.id.toString(),
+                        "version" to version.toString(),
+                        "now" to now.toString(),
+                        "email" to "graham@example.com",
+                        "displayName" to "Graham"
+                ))
+        execute("""MATCH (u:USER {id:{userId}}), (p:LOGIN_PROVIDER {id:"google"}) CREATE (u)-[:LOGIN {providerId:{providerId}, displayName:{displayName}}]->(p)""",
+                mapOf(
+                        "userId" to userId.id.toString(),
+                        "providerId" to "123",
+                        "displayName" to "graham@example.com"
+                ))
+        execute("""MATCH (u:USER {id:{userId}}), (p:LOGIN_PROVIDER {id:"twitter"}) CREATE (u)-[:LOGIN {providerId:{providerId}, displayName:{displayName}}]->(p)""",
+                mapOf(
+                        "userId" to userId.id.toString(),
+                        "providerId" to "987",
+                        "displayName" to "@grahamexample"
+                ))
+
+        val user = userServiceImpl.getByProvider("google", "123")
+
+        Assertions.assertNotNull(user)
+
+        user!!
 
         Assertions.assertAll(
                 Executable { Assertions.assertEquals(userId, user.identity.id) },
