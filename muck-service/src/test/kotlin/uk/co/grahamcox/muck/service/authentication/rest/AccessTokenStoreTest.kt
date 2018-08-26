@@ -1,8 +1,10 @@
-package uk.co.grahamcox.muck.service.authentication
+package uk.co.grahamcox.muck.service.authentication.rest
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import uk.co.grahamcox.muck.service.CurrentRequest
+import uk.co.grahamcox.muck.service.authentication.AccessToken
+import uk.co.grahamcox.muck.service.authentication.AccessTokenId
 import uk.co.grahamcox.muck.service.user.UserId
 import java.time.Instant
 import java.util.*

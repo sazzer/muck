@@ -1,7 +1,8 @@
-package uk.co.grahamcox.muck.service.authentication
+package uk.co.grahamcox.muck.service.authentication.rest
 
 import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
+import uk.co.grahamcox.muck.service.authentication.AccessToken
 
 /**
  * Read/Write store in which the Access Tokens for a request can be persisted

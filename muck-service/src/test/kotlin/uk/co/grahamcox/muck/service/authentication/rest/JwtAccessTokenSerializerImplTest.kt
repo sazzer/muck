@@ -1,8 +1,10 @@
-package uk.co.grahamcox.muck.service.authentication
+package uk.co.grahamcox.muck.service.authentication.rest
 
 import com.auth0.jwt.algorithms.Algorithm
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import uk.co.grahamcox.muck.service.authentication.AccessToken
+import uk.co.grahamcox.muck.service.authentication.AccessTokenId
 import uk.co.grahamcox.muck.service.user.UserId
 import java.time.Duration
 import java.time.Instant
@@ -29,7 +31,7 @@ internal class JwtAccessTokenSerializerImplTest {
         )
         val jwt = testSubject.serialize(accessToken)
 
-        Assertions.assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJhdWQiOiJ1ay5jby5ncmFoYW1jb3gubXVjay5zZXJ2aWNlLmF1dGhlbnRpY2F0aW9uLkp3dEFjY2Vzc1Rva2VuU2VyaWFsaXplckltcGwiLCJzdWIiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJ1ay5jby5ncmFoYW1jb3gubXVjay5zZXJ2aWNlLmF1dGhlbnRpY2F0aW9uLkp3dEFjY2Vzc1Rva2VuU2VyaWFsaXplckltcGwiLCJleHAiOjE1NTk1NjM3NDAsImlhdCI6MTUyODAyNzc0MCwianRpIjoiYWNjZXNzVG9rZW5JZCJ9.wVb3zGsovwlZkiKSzfKCtNwMfFhyL7cUZglLqtiTWUAvjreZZxE4bUiGlCMd2xyxGlJgqAyUV6aomEjIuYeBmQ",
+        Assertions.assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJhdWQiOiJ1ay5jby5ncmFoYW1jb3gubXVjay5zZXJ2aWNlLmF1dGhlbnRpY2F0aW9uLnJlc3QuSnd0QWNjZXNzVG9rZW5TZXJpYWxpemVySW1wbCIsInN1YiI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCIsImlzcyI6InVrLmNvLmdyYWhhbWNveC5tdWNrLnNlcnZpY2UuYXV0aGVudGljYXRpb24ucmVzdC5Kd3RBY2Nlc3NUb2tlblNlcmlhbGl6ZXJJbXBsIiwiZXhwIjoxNTU5NTYzNzQwLCJpYXQiOjE1MjgwMjc3NDAsImp0aSI6ImFjY2Vzc1Rva2VuSWQifQ.H9vzIpgO90FXutoY-O3rHf2S--N3J4y6WyyXUUVTapRB8vzYcnyAlyN-69fyzbc9948vtrbVk5urmFE1FF0SRA",
                 jwt)
     }
 

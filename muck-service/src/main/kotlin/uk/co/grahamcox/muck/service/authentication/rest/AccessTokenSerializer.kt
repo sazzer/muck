@@ -1,4 +1,6 @@
-package uk.co.grahamcox.muck.service.authentication
+package uk.co.grahamcox.muck.service.authentication.rest
+
+import uk.co.grahamcox.muck.service.authentication.AccessToken
 
 /**
  * Mechanism to serialize an Access Token to a string and back

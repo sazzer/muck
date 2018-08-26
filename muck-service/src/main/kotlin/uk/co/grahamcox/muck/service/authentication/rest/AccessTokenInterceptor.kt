@@ -1,4 +1,4 @@
-package uk.co.grahamcox.muck.service.authentication
+package uk.co.grahamcox.muck.service.authentication.rest
 
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory

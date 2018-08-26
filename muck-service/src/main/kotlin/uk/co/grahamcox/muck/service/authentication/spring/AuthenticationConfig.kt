@@ -5,9 +5,9 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
 import uk.co.grahamcox.muck.service.authentication.AccessTokenGeneratorImpl
-import uk.co.grahamcox.muck.service.authentication.AccessTokenInterceptor
-import uk.co.grahamcox.muck.service.authentication.AccessTokenStore
-import uk.co.grahamcox.muck.service.authentication.JwtAccessTokenSerializerImpl
+import uk.co.grahamcox.muck.service.authentication.rest.AccessTokenInterceptor
+import uk.co.grahamcox.muck.service.authentication.rest.AccessTokenStore
+import uk.co.grahamcox.muck.service.authentication.rest.JwtAccessTokenSerializerImpl
 
 /**
  * Spring configuration for working with Authentication

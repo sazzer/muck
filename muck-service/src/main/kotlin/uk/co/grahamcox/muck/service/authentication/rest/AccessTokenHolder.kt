@@ -1,4 +1,6 @@
-package uk.co.grahamcox.muck.service.authentication
+package uk.co.grahamcox.muck.service.authentication.rest
+
+import uk.co.grahamcox.muck.service.authentication.AccessToken
 
 /**
  * Interface describing how to get hold of the Access Token for the current request

@@ -6,7 +6,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import uk.co.grahamcox.muck.service.authentication.AccessTokenInterceptor
+import uk.co.grahamcox.muck.service.authentication.rest.AccessTokenInterceptor
 
 /**
  * Web MVC Configuration for the system
