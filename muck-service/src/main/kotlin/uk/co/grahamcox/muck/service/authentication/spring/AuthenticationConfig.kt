@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
 import uk.co.grahamcox.muck.service.authentication.AccessTokenGeneratorImpl
+import uk.co.grahamcox.muck.service.authentication.rest.AccessTokenArgumentResolver
 import uk.co.grahamcox.muck.service.authentication.rest.AccessTokenInterceptor
 import uk.co.grahamcox.muck.service.authentication.rest.AccessTokenStore
 import uk.co.grahamcox.muck.service.authentication.rest.JwtAccessTokenSerializerImpl
@@ -22,6 +23,7 @@ class AuthenticationConfig(context: GenericApplicationContext) {
             }
             bean<AccessTokenStore>()
             bean<AccessTokenInterceptor>()
+            bean<AccessTokenArgumentResolver>()
         }.initialize(context)
     }
 }
