@@ -27,6 +27,7 @@ class AuthenticationConfig(context: GenericApplicationContext) {
             bean<AccessTokenStore>()
             bean<AccessTokenInterceptor>()
             bean<AccessTokenArgumentResolver>()
+            bean<AuthenticationControllerAdvice>()
 
             bean<DebugController>()
         }.initialize(context)
