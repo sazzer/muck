@@ -17,9 +17,6 @@ import uk.co.grahamcox.muck.service.database.Neo4jOperations
 @SpringBootTest(classes = [MuckServiceApplication::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class SpringTestBase {
-    /** The database cleaner */
-    @Autowired
-    private lateinit var databaseCleaner: DatabaseCleaner
 
     /** The means to call the database */
     @Autowired
@@ -30,7 +27,7 @@ class SpringTestBase {
      */
     @BeforeEach
     fun clearDatabase() {
-        databaseCleaner.clean()
+        DatabaseCleaner(neo4jOperations).clean()
     }
 
     /**

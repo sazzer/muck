@@ -5,10 +5,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
 import uk.co.grahamcox.muck.service.authentication.AccessTokenGeneratorImpl
-import uk.co.grahamcox.muck.service.authentication.rest.AccessTokenArgumentResolver
-import uk.co.grahamcox.muck.service.authentication.rest.AccessTokenInterceptor
-import uk.co.grahamcox.muck.service.authentication.rest.AccessTokenStore
-import uk.co.grahamcox.muck.service.authentication.rest.JwtAccessTokenSerializerImpl
+import uk.co.grahamcox.muck.service.authentication.rest.*
+import java.time.Duration
 
 /**
  * Spring configuration for working with Authentication
@@ -17,13 +15,20 @@ import uk.co.grahamcox.muck.service.authentication.rest.JwtAccessTokenSerializer
 class AuthenticationConfig(context: GenericApplicationContext) {
     init {
         beans {
-            bean<AccessTokenGeneratorImpl>()
+            bean {
+                AccessTokenGeneratorImpl(
+                        ref(),
+                        Duration.ofDays(365)
+                )
+            }
             bean {
                 JwtAccessTokenSerializerImpl(Algorithm.HMAC512("MySecret"))
             }
             bean<AccessTokenStore>()
             bean<AccessTokenInterceptor>()
             bean<AccessTokenArgumentResolver>()
+
+            bean<DebugController>()
         }.initialize(context)
     }
 }
