@@ -23,6 +23,7 @@ class GoogleAuthenticationConfig(context: GenericApplicationContext) {
                 val redirectUri = env["muck.authentication.google.redirectUri"]
 
                 AuthenticationServiceImpl(
+                        id = "google",
                         redirectBuilder = GoogleAuthenticationRedirectBuilderImpl(
                                 URI(authUri),
                                 clientId,

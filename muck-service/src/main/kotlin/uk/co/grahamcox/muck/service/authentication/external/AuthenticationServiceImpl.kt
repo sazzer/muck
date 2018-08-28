@@ -6,6 +6,7 @@ import java.net.URI
  * Standard strategy-based implementation of the Authentication Service
  */
 class AuthenticationServiceImpl(
+        override val id: String,
         private val redirectBuilder: AuthenticationRedirectBuilder
 ) : AuthenticationService {
     /**

@@ -6,6 +6,9 @@ import java.net.URI
  * Mechanism to facilitate authentication by a third-party service
  */
 interface AuthenticationService {
+    /** The identity of this Authentication Service */
+    val id: String
+
     /**
      * Build the URI to redirect the user to
      * @return the URI to redirect the user to
