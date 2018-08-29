@@ -4,10 +4,10 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.co.grahamcox.muck.service.authentication.external.AuthenticationService
 import uk.co.grahamcox.muck.service.rest.hal.Link
+import uk.co.grahamcox.muck.service.rest.hal.buildUri
 import java.net.URI
 
 /**
@@ -27,7 +27,7 @@ class ExternalAuthenticationController(
         val result = ExternalAuthenticationServicesModel(
                 links = ExternalAthenticationServicesLinks(
                         self = Link(
-                                href = URI("/api/authentication/external")
+                                href = ::getProviders.buildUri()
                         ),
                         services = authenticationServices
                                 .map { it.id }
