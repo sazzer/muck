@@ -4,10 +4,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import uk.co.grahamcox.muck.service.MuckServiceApplication
 import uk.co.grahamcox.muck.service.acceptance.database.DatabaseCleaner
+import uk.co.grahamcox.muck.service.acceptance.requester.RequesterConfig
 import uk.co.grahamcox.muck.service.database.Neo4jOperations
 
 /**
@@ -16,6 +18,9 @@ import uk.co.grahamcox.muck.service.database.Neo4jOperations
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(classes = [MuckServiceApplication::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@Import(
+        RequesterConfig::class
+)
 class SpringTestBase {
 
     /** The means to call the database */
