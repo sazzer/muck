@@ -1,7 +1,9 @@
 package uk.co.grahamcox.muck.service.authentication.external.rest
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
@@ -34,7 +36,7 @@ class ExternalAuthenticationController(
                                 .sorted()
                                 .map {
                                     Link(
-                                            href = URI("/api/authentication/external/$it"),
+                                            href = ::startAuthentication.buildUri(it),
                                             name = it,
                                             type = null
                                     )
@@ -45,5 +47,18 @@ class ExternalAuthenticationController(
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf("application/hal+json"))
                 .body(result)
+    }
+
+    /**
+     * Start authentication by the named service
+     */
+    @RequestMapping(value = "/{service}/start", method = [RequestMethod.GET])
+    fun startAuthentication(@PathVariable("service") service: String): ResponseEntity<Unit> {
+        val service = authenticationServices.find { it.id == service } ?: throw IllegalArgumentException()
+        val redirect = service.buildRedirectUri()
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(redirect)
+                .build<Unit>()
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.context.support.beans
 import uk.co.grahamcox.muck.service.acceptance.requester.ListResponseMatcher
 import uk.co.grahamcox.muck.service.acceptance.requester.ResponseFieldConfig
 import uk.co.grahamcox.muck.service.acceptance.requester.ResponseMatcher
+import uk.co.grahamcox.muck.service.acceptance.requester.convertReturnedUri
 
 /**
  * Spring Config for authentication steps
@@ -23,7 +24,8 @@ class AuthenticationConfig(context: GenericApplicationContext) {
                                                 fieldPath = "/name"
                                         ),
                                         "Redirect URI" to ResponseFieldConfig(
-                                                fieldPath = "/href"
+                                                fieldPath = "/href",
+                                                actualConversion = ::convertReturnedUri
                                         )
                                 )
                         ),
@@ -34,3 +36,4 @@ class AuthenticationConfig(context: GenericApplicationContext) {
         }.initialize(context)
     }
 }
+
