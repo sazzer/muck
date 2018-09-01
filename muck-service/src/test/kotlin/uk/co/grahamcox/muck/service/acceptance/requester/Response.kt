@@ -13,6 +13,12 @@ data class Response(
     /** The HTTP Status Code returned */
     val statusCode = response.statusCode
 
+    /** The HTTP Response Headers */
+    val headers = response.headers
+
     /** The JXPath Context for interrogating the response */
     val context = JXPathContext.newContext(response)
+
+    /** Get the value from the response for the given JXPath */
+    fun getValue(path: String) = context.getValue(path)
 }
