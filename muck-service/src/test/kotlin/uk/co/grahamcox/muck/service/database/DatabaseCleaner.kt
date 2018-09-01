@@ -1,8 +1,7 @@
-package uk.co.grahamcox.muck.service.acceptance.database
+package uk.co.grahamcox.muck.service.database
 
 import org.slf4j.LoggerFactory
 import org.springframework.transaction.annotation.Transactional
-import uk.co.grahamcox.muck.service.database.Neo4jOperations
 
 /**
  * Mechanism by which we can clean the database of all data

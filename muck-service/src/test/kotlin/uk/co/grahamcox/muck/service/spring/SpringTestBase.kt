@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import uk.co.grahamcox.muck.service.MuckServiceApplication
-import uk.co.grahamcox.muck.service.acceptance.database.DatabaseCleaner
+import uk.co.grahamcox.muck.service.database.DatabaseCleaner
 import uk.co.grahamcox.muck.service.database.Neo4jOperations
 
 /**
