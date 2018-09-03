@@ -11,6 +11,24 @@ import uk.co.grahamcox.muck.service.acceptance.AcceptanceTestBase
  * Test starting to authenticate
  */
 class StartAuthenticationIT : AcceptanceTestBase() {
+
+    /**
+     * Test starting to authenticate against an unknown authentication service
+     */
+    @Test
+    fun startUnknownAuth() {
+        val response = requester.get("/api/authentication/external/unknown/start")
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(HttpStatus.NOT_FOUND, response.statusCode) },
+
+                Executable { Assertions.assertEquals("tag:grahamcox.co.uk,2018,problems/unknown-authentication-service", response.getValue("/body/type")) },
+                Executable { Assertions.assertEquals("The requested Authentication Service was unknown", response.getValue("/body/title")) },
+                Executable { Assertions.assertEquals(404, response.getValue("/body/status")) },
+                Executable { Assertions.assertEquals("unknown", response.getValue("/body/authenticationService")) }
+        )
+    }
+
     /**
      * Test starting to authenticate against Google
      */

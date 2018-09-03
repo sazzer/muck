@@ -3,11 +3,9 @@ package uk.co.grahamcox.muck.service.authentication.external.rest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import uk.co.grahamcox.muck.service.authentication.external.AuthenticationService
+import uk.co.grahamcox.muck.service.rest.Problem
 import uk.co.grahamcox.muck.service.rest.hal.Link
 import uk.co.grahamcox.muck.service.rest.hal.buildUri
 import java.net.URI
@@ -20,6 +18,22 @@ import java.net.URI
 class ExternalAuthenticationController(
         private val authenticationServices: Collection<AuthenticationService>
 ) {
+    /**
+     * Handle when a request comes in for an unknown authentication service
+     */
+    @ExceptionHandler(UnknownAuthenticationServiceException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun handleUnknownAuthenticationService(e: UnknownAuthenticationServiceException) =
+            Problem(
+                    type = URI("tag:grahamcox.co.uk,2018,problems/unknown-authentication-service"),
+                    title = "The requested Authentication Service was unknown",
+                    statusCode = HttpStatus.NOT_FOUND,
+                    extraData = mapOf(
+                            "authenticationService" to e.authenticationService
+                    )
+
+            )
+
     /**
      * Get the list of providers that we can support
      * @return the list of supported providers
@@ -54,7 +68,9 @@ class ExternalAuthenticationController(
      */
     @RequestMapping(value = "/{service}/start", method = [RequestMethod.GET])
     fun startAuthentication(@PathVariable("service") service: String): ResponseEntity<Unit> {
-        val service = authenticationServices.find { it.id == service } ?: throw IllegalArgumentException()
+        val service = authenticationServices.find { it.id == service }
+                ?: throw UnknownAuthenticationServiceException(service)
+
         val redirect = service.buildRedirectUri()
 
         return ResponseEntity.status(HttpStatus.FOUND)
