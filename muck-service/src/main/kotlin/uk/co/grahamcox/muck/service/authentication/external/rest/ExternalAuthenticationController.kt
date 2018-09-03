@@ -22,7 +22,6 @@ class ExternalAuthenticationController(
      * Handle when a request comes in for an unknown authentication service
      */
     @ExceptionHandler(UnknownAuthenticationServiceException::class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     fun handleUnknownAuthenticationService(e: UnknownAuthenticationServiceException) =
             Problem(
                     type = URI("tag:grahamcox.co.uk,2018,problems/unknown-authentication-service"),
@@ -31,7 +30,6 @@ class ExternalAuthenticationController(
                     extraData = mapOf(
                             "authenticationService" to e.authenticationService
                     )
-
             )
 
     /**

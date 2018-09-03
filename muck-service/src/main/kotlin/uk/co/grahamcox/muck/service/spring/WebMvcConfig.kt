@@ -36,4 +36,6 @@ class WebMvcConfig : WebMvcConfigurer {
                 .allowedMethods(*HttpMethod.values().map { it.name }.toTypedArray())
                 .allowedOrigins("*")
     }
+
+
 }

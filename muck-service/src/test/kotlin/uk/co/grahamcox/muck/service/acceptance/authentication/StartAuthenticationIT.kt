@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.web.util.UriComponentsBuilder
 import uk.co.grahamcox.muck.service.acceptance.AcceptanceTestBase
 
@@ -21,6 +22,7 @@ class StartAuthenticationIT : AcceptanceTestBase() {
 
         Assertions.assertAll(
                 Executable { Assertions.assertEquals(HttpStatus.NOT_FOUND, response.statusCode) },
+                Executable { Assertions.assertEquals(MediaType.valueOf("application/problem+json"), response.headers.contentType) },
 
                 Executable { Assertions.assertEquals("tag:grahamcox.co.uk,2018,problems/unknown-authentication-service", response.getValue("/body/type")) },
                 Executable { Assertions.assertEquals("The requested Authentication Service was unknown", response.getValue("/body/title")) },
