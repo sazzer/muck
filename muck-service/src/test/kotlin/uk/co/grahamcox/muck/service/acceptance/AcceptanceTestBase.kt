@@ -11,7 +11,10 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.co.grahamcox.muck.service.MuckServiceApplication
 import uk.co.grahamcox.muck.service.database.DatabaseCleaner
 import uk.co.grahamcox.muck.service.acceptance.requester.Requester
+import uk.co.grahamcox.muck.service.authentication.AccessTokenGenerator
+import uk.co.grahamcox.muck.service.authentication.rest.AccessTokenSerializer
 import uk.co.grahamcox.muck.service.database.Neo4jOperations
+import uk.co.grahamcox.muck.service.user.UserId
 
 /**
  * Base class for Spring based tests
@@ -36,6 +39,14 @@ class AcceptanceTestBase {
     @Autowired
     protected lateinit var requester: Requester
 
+    /** The means to generate an access token */
+    @Autowired
+    private lateinit var accessTokenGenerator: AccessTokenGenerator
+
+    /** The means to serialize an access token */
+    @Autowired
+    private lateinit var accessTokenSerializer: AccessTokenSerializer
+
     /**
      * Clear the database before each test
      */
@@ -45,10 +56,28 @@ class AcceptanceTestBase {
     }
 
     /**
+     * Clear the requester before each test
+     */
+    @BeforeEach
+    fun clearRequester() {
+        requester.reset()
+    }
+
+    /**
      * Execute the given query against the database
      */
     protected fun execute(query: String, parameters: Map<String, Any?> = emptyMap()) {
         neo4jOperations.execute(query, parameters)
+    }
+
+    /**
+     * Generate an Access Token valid for the given User ID and use it for future requests
+     */
+    protected fun authenticatedAs(user: UserId) {
+        val accessToken = accessTokenGenerator.generate(user)
+        val bearerToken = accessTokenSerializer.serialize(accessToken)
+
+        requester.accessToken = bearerToken
     }
 
     /**

@@ -20,4 +20,14 @@ class AuthenticationControllerAdvice {
             title = "No Access Token was provided",
             statusCode = HttpStatus.UNAUTHORIZED
     )
+
+    /**
+     * Handle when an Access Token was invalid
+     */
+    @ExceptionHandler(InvalidAccessTokenException::class)
+    fun handleInvalidAccessToken() = Problem(
+            type = URI("tag:grahamcox.co.uk,2018,problems/invalid-access-token"),
+            title = "The Access Token was invalid",
+            statusCode = HttpStatus.FORBIDDEN
+    )
 }
