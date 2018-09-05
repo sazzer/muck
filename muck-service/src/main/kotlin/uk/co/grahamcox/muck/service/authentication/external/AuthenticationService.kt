@@ -1,5 +1,6 @@
 package uk.co.grahamcox.muck.service.authentication.external
 
+import uk.co.grahamcox.muck.service.user.UserResource
 import java.net.URI
 
 /**
@@ -15,4 +16,8 @@ interface AuthenticationService {
      */
     fun buildRedirectUri(): URI
 
+    /**
+     * Complete user authentication and return the user that has authenticated
+     */
+    fun completeAuthentication(input: Map<String, String>) : UserResource
 }

@@ -3,11 +3,13 @@ package uk.co.grahamcox.muck.service.authentication.external.rest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import uk.co.grahamcox.muck.service.authentication.external.AuthenticationService
 import uk.co.grahamcox.muck.service.rest.Problem
 import uk.co.grahamcox.muck.service.rest.hal.Link
 import uk.co.grahamcox.muck.service.rest.hal.buildUri
+import uk.co.grahamcox.muck.service.user.UserResource
 import java.net.URI
 
 /**
@@ -15,6 +17,7 @@ import java.net.URI
  */
 @RestController
 @RequestMapping("/api/authentication/external")
+@Transactional
 class ExternalAuthenticationController(
         private val authenticationServices: Collection<AuthenticationService>
 ) {
@@ -74,5 +77,19 @@ class ExternalAuthenticationController(
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(redirect)
                 .build<Unit>()
+    }
+
+    /**
+     * Finish authentication by the named service
+     */
+    @RequestMapping(value = "/{service}/callback", method = [RequestMethod.GET])
+    fun finishAuthentication(@PathVariable("service") service: String,
+                             @RequestParam queryParams: Map<String, String>): UserResource {
+        val service = authenticationServices.find { it.id == service }
+                ?: throw UnknownAuthenticationServiceException(service)
+
+        val user = service.completeAuthentication(queryParams)
+
+        return user
     }
 }

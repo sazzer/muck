@@ -4,8 +4,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
-import uk.co.grahamcox.muck.service.database.DatabaseCleaner
 import uk.co.grahamcox.muck.service.acceptance.requester.RequesterConfig
+import uk.co.grahamcox.muck.service.database.DatabaseCleaner
 
 /**
  * Base spring configuration for all of the acceptance tests

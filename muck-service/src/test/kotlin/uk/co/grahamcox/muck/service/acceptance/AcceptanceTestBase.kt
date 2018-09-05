@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.web.client.MockRestServiceServer
+import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import uk.co.grahamcox.muck.service.MuckServiceApplication
 import uk.co.grahamcox.muck.service.database.DatabaseCleaner
@@ -46,6 +48,22 @@ class AcceptanceTestBase {
     /** The means to serialize an access token */
     @Autowired
     private lateinit var accessTokenSerializer: AccessTokenSerializer
+
+    /** The rest template to work with */
+    @Autowired
+    private lateinit var restTemplate: RestTemplate
+
+    /** The mock server to bind the rest template to */
+    protected lateinit var mockServer : MockRestServiceServer
+
+    /**
+     * Set up the mock server before the tests
+     */
+    @BeforeEach
+    fun setupMockServer() {
+        mockServer = MockRestServiceServer.bindTo(restTemplate).build()
+    }
+
 
     /**
      * Clear the database before each test
