@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.18.0",
     "connected-react-router": "^4.3.0",
+    "halson": "^3.0.0",
     "history": "^4.7.2",
     "i18next": "^11.5.0",
     "i18next-browser-languagedetector": "^2.2.2",
@@ -31,6 +33,7 @@
     "@storybook/addon-links": "^3.4.10",
     "@storybook/addons": "^3.4.10",
     "@storybook/react": "^3.4.10",
+    "axios-mock-adapter": "^1.15.0",
     "enzyme": "^3.4.0",
     "enzyme-adapter-react-16": "^1.2.0",
     "flow-bin": "^0.77.0",
