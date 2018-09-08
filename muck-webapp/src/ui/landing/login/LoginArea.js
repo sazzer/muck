@@ -15,7 +15,7 @@ export default function LoginArea() {
             <Header dividing as="h3">
                 <Interpolate i18nKey="page.landing.login.title" />
             </Header>
-            <SocialLogins buttons={['google']}/>
+            <SocialLogins />
         </div>
     )
 }
