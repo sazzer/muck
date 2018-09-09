@@ -3,7 +3,7 @@
 import {createStore} from 'redux-box';
 import {routerMiddleware, connectRouter} from 'connected-react-router';
 import {createBrowserHistory} from 'history';
-import {module as authModule} from './auth';
+import {module as authModule} from '../auth/index';
 
 export const history = createBrowserHistory();
 

@@ -4,7 +4,7 @@ import { put, call } from 'redux-saga/effects';
 import { loadResource, getApiRoot } from "../api";
 
 /** The shape of a single authentication service */
-type AuthenticationService = {
+export type AuthenticationService = {
     name: string,
     href: string
 }
@@ -35,6 +35,16 @@ const STORE_AUTHENTICATION_SERVICES_ACTION = "AUTH/STORE_AUTHENTICATION_SERVICES
  */
 export function selectAuthenticationServices(state: AuthenticationServicesState): Array<string> {
     return state.services.map(service => service.name);
+}
+
+/**
+ * Selector to get the single authentication service with the given name, if there is one
+ * @param state the state to interrogate
+ * @param serviceName the name of the service
+ * @return The service details, if found
+ */
+export function selectAuthenticationService(state: AuthenticationServicesState, serviceName: string): ?AuthenticationService {
+    return state.services.find(service => service.name === serviceName);
 }
 
 /**
