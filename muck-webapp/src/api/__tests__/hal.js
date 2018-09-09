@@ -65,6 +65,24 @@ describe('loadResource', () => {
                     ]
                 });
             });
+            it('Can get the links correctly', () => {
+                expect(resource.getLinks('self')).toEqual([
+                    {
+                        href: '/a/b'
+                    }
+                ]);
+            });
+            it('Can get a single unnamed link correctly', () => {
+                expect(resource.getLink('self')).toEqual({
+                    href: '/a/b'
+                });
+            });
+            it('Can not get a single unknown named link', () => {
+                expect(resource.getLink('self', 'a')).toBeUndefined();
+            });
+            it('Can not get a single unknown link', () => {
+                expect(resource.getLink('unknown')).toBeUndefined();
+            });
         });
 
         describe('With a set of links', () => {
@@ -106,6 +124,32 @@ describe('loadResource', () => {
                         }
                     ]
                 });
+            });
+            it('Can get the links correctly', () => {
+                expect(resource.getLinks('other')).toEqual([
+                    {
+                        name: 'a1',
+                        href: '/first'
+                    }, {
+                        name: 'b2',
+                        href: '/second'
+                    }, {
+                        name: 'c3',
+                        href: '/third'
+                    }
+                ]);
+            });
+            it('Can get a single named link correctly', () => {
+                expect(resource.getLink('other', 'a1')).toEqual({
+                    name: 'a1',
+                    href: '/first'
+                });
+            });
+            it('Can not get an unknown named link', () => {
+                expect(resource.getLink('other', 'unknown')).toBeUndefined();
+            });
+            it('Can not get an unnamed link', () => {
+                expect(resource.getLink('other')).toBeUndefined();
             });
         });
     });

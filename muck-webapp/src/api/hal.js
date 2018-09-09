@@ -17,7 +17,9 @@ export type Links = Array<Link>;
 /** Type representing a HAL Resource */
 export type Resource = {
     data: { [string] : any },
-    links: { [string] : Links }
+    links: { [string] : Links },
+    getLinks: (rel: string) => Links,
+    getLink: (rel: string, name?: string) => ?Link
 };
 
 /**
@@ -49,7 +51,12 @@ export function loadResource(url: string, params?: { [string] : any }): Promise<
 
         return {
             data: responseData,
-            links: responseLinks
+            links: responseLinks,
+            getLinks: (rel: string) => responseLinks[rel] || [],
+            getLink: (rel: string, name?: string): ?Link => {
+                const links = responseLinks[rel] || [];
+                return links.find((link) => link.name === name);
+            }
         };
     });
 }

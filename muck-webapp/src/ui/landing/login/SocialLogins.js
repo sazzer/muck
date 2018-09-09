@@ -35,8 +35,20 @@ export function SocialLogins({buttons}: SocialLoginsProps) {
     );
 }
 
-export function ConnectedSocialLogins({auth} : {auth: AuthModule}) {
-    return <SocialLogins buttons={auth.selectAuthenticationServices()} />
+/**
+ * Wrapper around the Social Logins component that deals with the Redux Store
+ */
+class ConnectedSocialLogins extends React.Component<{auth: AuthModule}> {
+    componentDidMount() {
+        this.props.auth.loadAuthenticationServices();
+    }
+
+    render() {
+        return <SocialLogins buttons={this.props.auth.selectAuthenticationServices()} />
+    }
 }
 
+/**
+ * Wrapper around the Connected Social Logins component that actually provides the Redux store
+ */
 export default connectStore({auth: authModule})(ConnectedSocialLogins);
