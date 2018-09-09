@@ -13,16 +13,17 @@ const BUTTON_COLOURS = {
 };
 
 type SocialLoginsProps = {
-    buttons: Array<string>
+    buttons: Array<string>,
+    startAuthenticationAction: (string) => void
 }
 
 /**
  * React component to display the options for logging in using social login providers
  * @constructor
  */
-export function SocialLogins({buttons}: SocialLoginsProps) {
+export function SocialLogins({buttons, startAuthenticationAction}: SocialLoginsProps) {
     const buttonMarkup = buttons.map(button => (
-        <Button color={BUTTON_COLOURS[button]} fluid key={button}>
+        <Button color={BUTTON_COLOURS[button]} fluid key={button} onClick={() => startAuthenticationAction(button)}>
             <Icon name={button} />
             <Interpolate i18nKey={`page.landing.login.socialLogins.${button}`} />
         </Button>
@@ -44,7 +45,8 @@ class ConnectedSocialLogins extends React.Component<{auth: AuthModule}> {
     }
 
     render() {
-        return <SocialLogins buttons={this.props.auth.selectAuthenticationServices()} />
+        return <SocialLogins buttons={this.props.auth.selectAuthenticationServices()}
+                             startAuthenticationAction={this.props.auth.startAuthentication} />
     }
 }
 

@@ -3,9 +3,6 @@
 import axios from 'axios';
 import getConfig from '../config';
 
-/** The base URI to call */
-const API_BASE=getConfig('API_URI');
-
 /** Type representing the request to be made */
 export type RequestConfig = {
     url: string,
@@ -28,7 +25,7 @@ export type Response = {
  */
 export default function request(config: RequestConfig): Promise<Response> {
     return axios.request({
-        baseURL: API_BASE,
+        baseURL: getConfig('API_URI'),
         timeout: 5000,
         ...config
     });

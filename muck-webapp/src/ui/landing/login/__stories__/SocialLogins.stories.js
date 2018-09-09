@@ -2,13 +2,14 @@
 
 import React from 'react';
 import {storiesOf} from '@storybook/react';
-import { SocialLogins } from '../SocialLogins';
+import {action} from '@storybook/addon-actions';
+import {SocialLogins} from '../SocialLogins';
 
 storiesOf('LandingPage/Login/SocialLogins', module)
     .addWithJSX('Google', () => {
 
         return (
-            <SocialLogins buttons={['google']}/>
+            <SocialLogins buttons={['google']} startAuthenticationAction={action('startAuthentication')}/>
         );
     }, {
         showFunctions: false
