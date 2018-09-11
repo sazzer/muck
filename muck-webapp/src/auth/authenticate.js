@@ -1,6 +1,6 @@
 // @flow
 
-import { select, call } from 'redux-saga/effects';
+import { select, call, put } from 'redux-saga/effects';
 import { selectAuthenticationService } from "./authenticationServices";
 import type {AuthenticationService} from "./authenticationServices";
 import applySelector from '../redux/applySelector';
@@ -18,6 +18,13 @@ type StartAuthenticationAction = {
     }
 };
 
+/** Type representing the result of successfully authenticating */
+type AuthenticationResult = {
+    userId: string,
+    bearerToken: string,
+    expires: Date
+};
+
 /** Action key for starting authentication with a particular service */
 const START_AUTHENTICATION_ACTION = "AUTH/START_AUTHENTICATION_ACTION";
 
@@ -25,7 +32,7 @@ const START_AUTHENTICATION_ACTION = "AUTH/START_AUTHENTICATION_ACTION";
  * Actually open the window for the authentication flow
  * @param service the service to open the window for
  */
-function openAuthenticationWindow(service: AuthenticationService): Promise<any> {
+function openAuthenticationWindow(service: AuthenticationService): Promise<AuthenticationResult> {
     return new Promise((resolve) => {
         const openedWindow = window.open(service.href, 'muckAuth', 'dependent');
 
@@ -33,7 +40,7 @@ function openAuthenticationWindow(service: AuthenticationService): Promise<any> 
             if (event.data && event.data.message === 'authenticationResult') {
                 window.removeEventListener('message', callback);
                 openedWindow.close();
-                resolve(event.data);
+                resolve(event.data.params);
             }
         }
 
@@ -47,8 +54,22 @@ function openAuthenticationWindow(service: AuthenticationService): Promise<any> 
  */
 export function* startAuthenticationSaga(action: StartAuthenticationAction): Generator<any, any, any> {
     const service = yield select(applySelector, 'auth', selectAuthenticationService, [action.payload.service]);
-    const authenticationResult = yield call(openAuthenticationWindow, service);
-    console.log(authenticationResult);
+    const authenticationResult: AuthenticationResult = yield call(openAuthenticationWindow, service);
+
+    yield put({
+        type: '',
+        payload: {
+            bearerToken: authenticationResult.bearerToken,
+            expires: authenticationResult.expires
+        }
+    });
+
+    yield put({
+        type: '',
+        payload: {
+            userId: authenticationResult.userId
+        }
+    });
 }
 
 /** The representation of this sub-module */

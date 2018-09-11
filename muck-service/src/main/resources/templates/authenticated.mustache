@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="theme-color" content="#000000" />
+    <title>Authenticated</title>
+  </head>
+  <body>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div>
+        User ID: {{user.identity.id.id }}
+    </div>
+    <div>
+        User: {{ user.data.displayName }}
+    </div>
+
+    <script>
+        var message = {
+            message: 'authenticationResult',
+            params: {
+                userId: '{{user.identity.id.id}}',
+                bearerToken: '{{bearerToken}}',
+                expires: new Date('{{accessToken.expires}}')
+            }
+        };
+
+        window.opener.postMessage(message, '*');
+    </script>
+  </body>
+</html>
