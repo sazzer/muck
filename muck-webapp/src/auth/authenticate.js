@@ -4,6 +4,7 @@ import { select, call, put } from 'redux-saga/effects';
 import { selectAuthenticationService } from "./authenticationServices";
 import type {AuthenticationService} from "./authenticationServices";
 import applySelector from '../redux/applySelector';
+import {storeAccessToken} from "./accessToken";
 
 /** The shape of the state for this sub-module */
 export type AuthenticateState = {
@@ -56,13 +57,7 @@ export function* startAuthenticationSaga(action: StartAuthenticationAction): Gen
     const service = yield select(applySelector, 'auth', selectAuthenticationService, [action.payload.service]);
     const authenticationResult: AuthenticationResult = yield call(openAuthenticationWindow, service);
 
-    yield put({
-        type: '',
-        payload: {
-            bearerToken: authenticationResult.bearerToken,
-            expires: authenticationResult.expires
-        }
-    });
+    yield put(storeAccessToken(authenticationResult.bearerToken, authenticationResult.expires));
 
     yield put({
         type: '',
