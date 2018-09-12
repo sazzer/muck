@@ -1,5 +1,8 @@
 // @flow
 
+import {call} from 'redux-saga/effects';
+import {setBearerToken} from "../api/requester";
+
 /** Type representing an access token */
 export type AccessToken = {
     bearerToken: string,
@@ -51,6 +54,13 @@ export function storeAccessTokenMutation(state: AccessTokenState, action: StoreA
     };
 }
 
+/**
+ * Saga for applying an Access Token to the requester
+ */
+export function* applyAccessTokenSaga(action: StoreAccessTokenAction): Generator<any, any, any> {
+    yield call(setBearerToken, action.payload.bearerToken);
+}
+
 /** The representation of this sub-module */
 export const module = {
     initialState: {
@@ -61,6 +71,7 @@ export const module = {
         [STORE_ACCESS_TOKEN_ACTION]: storeAccessTokenMutation
     },
     sagas: {
+        [STORE_ACCESS_TOKEN_ACTION]: applyAccessTokenSaga
     },
     selectors: {
     }
