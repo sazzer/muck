@@ -20,7 +20,7 @@ import java.util.*
 /**
  * Integration tests for completing authentication
  */
-@Disabled
+@Disabled("Need to support reading non-JSON responses")
 class CompleteAuthenticationIT : AcceptanceTestBase() {
     /** The user service */
     @Autowired
