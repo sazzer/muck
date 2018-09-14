@@ -5,6 +5,7 @@ import { selectAuthenticationService } from "./authenticationServices";
 import type {AuthenticationService} from "./authenticationServices";
 import applySelector from '../redux/applySelector';
 import {storeAccessToken} from "./accessToken";
+import {storeCurrentUser} from "../users/currentUser";
 
 /** The shape of the state for this sub-module */
 export type AuthenticateState = {
@@ -59,12 +60,7 @@ export function* startAuthenticationSaga(action: StartAuthenticationAction): Gen
 
     yield put(storeAccessToken(authenticationResult.bearerToken, authenticationResult.expires));
 
-    yield put({
-        type: '',
-        payload: {
-            userId: authenticationResult.userId
-        }
-    });
+    yield put(storeCurrentUser(authenticationResult.userId));
 }
 
 /** The representation of this sub-module */
