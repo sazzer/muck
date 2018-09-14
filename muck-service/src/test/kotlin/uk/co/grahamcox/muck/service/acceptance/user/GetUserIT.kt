@@ -1,7 +1,6 @@
 package uk.co.grahamcox.muck.service.acceptance.user
 
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
 import org.springframework.beans.factory.annotation.Autowired
@@ -68,7 +67,6 @@ class GetUserIT : AcceptanceTestBase() {
      * Test getting the details of a user when authenticated as a different user
      */
     @Test
-    @Disabled
     fun getOtherUser() {
         authenticatedAs(UserId(USER_ID))
         val response = requester.get("/api/users/${UUID.randomUUID()}")

@@ -7,6 +7,7 @@ import org.springframework.context.support.beans
 import org.springframework.web.client.RestTemplate
 import uk.co.grahamcox.muck.service.authentication.external.spring.ExternalAuthenticationConfig
 import uk.co.grahamcox.muck.service.authentication.spring.AuthenticationConfig
+import uk.co.grahamcox.muck.service.authorization.spring.AuthorizationConfig
 import uk.co.grahamcox.muck.service.database.DatabaseConfig
 import uk.co.grahamcox.muck.service.home.spring.HomeConfig
 import uk.co.grahamcox.muck.service.rest.ProblemResponseBodyAdvice
@@ -21,6 +22,7 @@ import java.time.Clock
         DatabaseConfig::class,
         UserConfig::class,
         AuthenticationConfig::class,
+        AuthorizationConfig::class,
         ExternalAuthenticationConfig::class,
         HomeConfig::class,
         WebMvcConfig::class

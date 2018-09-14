@@ -6,6 +6,7 @@ import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
 import uk.co.grahamcox.muck.service.authentication.AccessToken
+import uk.co.grahamcox.muck.service.authorization.Authorizer
 import uk.co.grahamcox.muck.service.user.UserId
 import kotlin.reflect.jvm.kotlinFunction
 
@@ -25,7 +26,8 @@ class AccessTokenArgumentResolver(
      */
     override fun supportsParameter(parameter: MethodParameter) =
             parameter.parameterType == AccessToken::class.java ||
-                    parameter.parameterType == UserId::class.java
+                    parameter.parameterType == UserId::class.java ||
+                    parameter.parameterType == Authorizer::class.java
 
     /**
      * Resolves a method parameter into an argument value from a given request.
@@ -57,6 +59,7 @@ class AccessTokenArgumentResolver(
         return when(parameter.parameterType) {
             AccessToken::class.java -> accessToken
             UserId::class.java -> accessToken?.user
+            Authorizer::class.java -> accessToken?.let { Authorizer(it) }
             else -> null
         }
     }

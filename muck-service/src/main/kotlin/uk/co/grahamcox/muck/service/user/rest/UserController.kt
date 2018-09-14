@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import uk.co.grahamcox.muck.service.authorization.Authorizer
 import uk.co.grahamcox.muck.service.database.ResourceNotFoundException
 import uk.co.grahamcox.muck.service.rest.Problem
 import uk.co.grahamcox.muck.service.rest.hal.Link
@@ -34,9 +35,16 @@ class UserController(private val userService: UserService) {
      * Get the details of a user by their unique ID
      */
     @RequestMapping("/{id}", method = [RequestMethod.GET])
-    fun getUser(@PathVariable("id") userId: UUID,
-                currentUser: UserId) : ResponseEntity<UserModel> {
-        val user = userService.getById(UserId(userId))
+    fun getUser(@PathVariable("id") rawUserId: UUID,
+                currentUser: UserId,
+                authorizer: Authorizer) : ResponseEntity<UserModel> {
+        val userId = UserId(rawUserId)
+
+        authorizer {
+            isUser(userId)
+        }
+
+        val user = userService.getById(userId)
 
         val result = UserModel(
                 email = user.data.email,
@@ -50,7 +58,7 @@ class UserController(private val userService: UserService) {
                         .sortedWith(compareBy(UserLoginModel::provider, UserLoginModel::displayName, UserLoginModel::providerId)),
                 links = UserLinks(
                         self = Link(
-                                href = ::getUser.buildUri(userId, null)
+                                href = ::getUser.buildUri(rawUserId, null, null)
                         )
                 )
         )
