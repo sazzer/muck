@@ -10,7 +10,7 @@ import kotlin.reflect.jvm.javaMethod
  * @param args The controller arguments
  * @return the URI
  */
-fun <R> KFunction<R>.buildUri(vararg args: Any): URI {
+fun <R> KFunction<R>.buildUri(vararg args: Any?): URI {
     val method = this.javaMethod!!
     val methodClass = method.declaringClass
 
