@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.co.grahamcox.muck.service.authentication.external.rest.ExternalAuthenticationController
 import uk.co.grahamcox.muck.service.rest.hal.Link
 import uk.co.grahamcox.muck.service.rest.hal.buildUri
+import uk.co.grahamcox.muck.service.user.rest.UserController
 
 /**
  * Controller to get the Home Document
@@ -25,6 +26,10 @@ class HomeController {
                         ),
                         externalAuthenticationServices = Link(
                                 ExternalAuthenticationController::getProviders.buildUri()
+                        ),
+                        user = Link(
+                                UserController::getUser.buildUri(),
+                                templated = true
                         )
                 )
         )

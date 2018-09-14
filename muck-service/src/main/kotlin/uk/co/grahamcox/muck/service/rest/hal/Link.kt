@@ -6,7 +6,7 @@ import java.net.URI
  * Representation of a single link in a HAL document
  */
 data class Link(
-        val href: URI,
+        val href: String,
         val templated: Boolean? = false,
         val type: String? = "application/hal+json",
         val deprecation: String? = null,

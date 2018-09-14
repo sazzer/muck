@@ -58,7 +58,7 @@ class ExternalAuthenticationController(
                                 .sorted()
                                 .map {
                                     Link(
-                                            href = ::startAuthentication.buildUri(it),
+                                            href = ::startAuthentication.buildUri("service" to it),
                                             name = it,
                                             type = null
                                     )
@@ -76,10 +76,10 @@ class ExternalAuthenticationController(
      */
     @RequestMapping(value = "/{service}/start", method = [RequestMethod.GET])
     fun startAuthentication(@PathVariable("service") service: String): ResponseEntity<Unit> {
-        val service = authenticationServices.find { it.id == service }
+        val authenticationService = authenticationServices.find { it.id == service }
                 ?: throw UnknownAuthenticationServiceException(service)
 
-        val redirect = service.buildRedirectUri()
+        val redirect = authenticationService.buildRedirectUri()
 
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(redirect)
@@ -92,10 +92,10 @@ class ExternalAuthenticationController(
     @RequestMapping(value = "/{service}/callback", method = [RequestMethod.GET])
     fun finishAuthentication(@PathVariable("service") service: String,
                              @RequestParam queryParams: Map<String, String>): ModelAndView {
-        val service = authenticationServices.find { it.id == service }
+        val authenticationService = authenticationServices.find { it.id == service }
                 ?: throw UnknownAuthenticationServiceException(service)
 
-        val user = service.completeAuthentication(queryParams)
+        val user = authenticationService.completeAuthentication(queryParams)
 
         val accessToken = accessTokenGenerator.generate(user.identity.id)
         val bearerToken = accessTokenSerializer.serialize(accessToken)

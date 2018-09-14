@@ -58,7 +58,7 @@ class UserController(private val userService: UserService) {
                         .sortedWith(compareBy(UserLoginModel::provider, UserLoginModel::displayName, UserLoginModel::providerId)),
                 links = UserLinks(
                         self = Link(
-                                href = ::getUser.buildUri(rawUserId, null, null)
+                                href = ::getUser.buildUri("rawUserId" to rawUserId)
                         )
                 )
         )

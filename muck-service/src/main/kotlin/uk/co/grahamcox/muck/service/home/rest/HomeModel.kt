@@ -8,7 +8,8 @@ import uk.co.grahamcox.muck.service.rest.hal.Link
  */
 data class HomeLinks(
         val self: Link,
-        val externalAuthenticationServices: Link
+        val externalAuthenticationServices: Link,
+        val user: Link
 )
 
 /**
