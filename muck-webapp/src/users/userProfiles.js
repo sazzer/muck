@@ -77,6 +77,15 @@ export function storeUserProfile(user: UserProfile) : StoreUserProfileAction {
 }
 
 /**
+ * Selector to get the user with the given ID
+ * @param state the state to get the user from
+ * @param userId The ID of the user to get
+ */
+export function selectUserById(state: UserProfilesState, userId: string) : ?UserProfile {
+    return state.users[userId];
+}
+
+/**
  * Saga for actually loading the authentication services services from the server
  */
 export function* loadUserProfileSaga(action: LoadUserProfileAction): Generator<any, any, any> {
@@ -114,9 +123,11 @@ export const module = {
         [LOAD_USER_PROFILE_ACTION]: loadUserProfileSaga
     },
     selectors: {
+        selectUserById: (state: UserProfilesState) => (userId: string) => selectUserById(state, userId)
     }
 };
 
 /** The shape of this sub-module */
 export type UserProfilesModule = {
+    selectUserById: (string) => ?UserProfile
 };

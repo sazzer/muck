@@ -49,6 +49,14 @@ export function* storeCurrentUserSaga(action: StoreCurrentUserIdAction): Generat
     yield put(loadUserProfile(action.payload.userId));
 }
 
+/**
+ * Selector to get the ID of the user currently logged in
+ * @param state the state to get the ID from
+ */
+export function selectCurrentUserId(state: CurrentUserState) : ?string {
+    return state.currentUserId;
+}
+
 /** The representation of this sub-module */
 export const module = {
     initialState: {
@@ -62,9 +70,11 @@ export const module = {
         [STORE_CURRENT_USER_ACTION]: storeCurrentUserSaga
     },
     selectors: {
+        selectCurrentUserId:(state: CurrentUserState) => () => selectCurrentUserId(state)
     }
 };
 
 /** The shape of this sub-module */
 export type CurrentUserModule = {
+    selectCurrentUserId: () => ?string
 };

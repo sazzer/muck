@@ -4,6 +4,7 @@ import React from 'react';
 import {Menu} from 'semantic-ui-react';
 import {Interpolate} from 'react-i18next';
 import EncyclopediaMenu from './EncyclopediaMenu';
+import UserMenu from './UserMenu';
 
 /**
  * Representation of the header bar for the application
@@ -16,6 +17,7 @@ export default function HeaderBar() {
             </Menu.Item>
             <Menu.Menu position='right'>
                 <EncyclopediaMenu/>
+                <UserMenu />
             </Menu.Menu>
         </Menu>
     );

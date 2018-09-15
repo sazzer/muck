@@ -20,6 +20,12 @@
           "skills": "Skills",
           "feats": "Feats"
         }
+      },
+      "user": {
+        "menu": {
+          "profile": "User Profile",
+          "logout": "Log Out"
+        }
       }
     }
   }

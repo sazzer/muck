@@ -33,3 +33,24 @@ describe('storeCurrentUserMutation', () => {
         });
     });
 });
+
+describe('selectCurrentUserId', () => {
+    describe('From an empty state', () => {
+        const state = {
+            ...testSubject.module.initialState
+        };
+
+        it('Returns nothing', () => {
+            expect(testSubject.selectCurrentUserId(state)).toBeUndefined();
+        });
+    });
+    describe('From a populated state', () => {
+        const state = {
+            currentUserId: 'userId'
+        };
+
+        it('Returns the correct value', () => {
+            expect(testSubject.selectCurrentUserId(state)).toBe('userId');
+        });
+    });
+});
