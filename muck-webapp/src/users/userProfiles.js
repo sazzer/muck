@@ -2,7 +2,7 @@
 
 /** The type to represent a user */
 import {call, put} from 'redux-saga/effects';
-import {getApiRoot, loadResource} from "../api";
+import {loadResource} from "../api";
 
 /**
  * Type representing the details of a login with a provider
@@ -80,23 +80,15 @@ export function storeUserProfile(user: UserProfile) : StoreUserProfileAction {
  * Saga for actually loading the authentication services services from the server
  */
 export function* loadUserProfileSaga(action: LoadUserProfileAction): Generator<any, any, any> {
-    const apiDetails = yield call(getApiRoot);
-    const userLink = apiDetails.getLink('user');
-    if (userLink) {
-        const user = yield call(loadResource, userLink.href, {
-            pathParams: {
-                id: action.payload.userId
-            }
-        });
+    const user = yield call(loadResource, action.payload.userId);
 
-        const userProfile = {
-            userLink: user.getLink('self').href,
-            email: user.data.email,
-            displayName: user.data.displayName,
-            logins: user.data.logins
-        };
-        yield put(storeUserProfile(userProfile));
-    }
+    const userProfile = {
+        userLink: user.getLink('self').href,
+        email: user.data.email,
+        displayName: user.data.displayName,
+        logins: user.data.logins
+    };
+    yield put(storeUserProfile(userProfile));
 }
 
 /**
