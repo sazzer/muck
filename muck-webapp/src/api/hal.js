@@ -2,6 +2,7 @@
 
 import request from './requester';
 import halson from 'halson';
+import uriTemplates from 'uri-templates';
 
 /** Type representing a Link in a HAL Resource */
 export type Link = {
@@ -22,16 +23,23 @@ export type Resource = {
     getLink: (rel: string, name?: string) => ?Link
 };
 
+export type LoadResourceParams = {
+    pathParams?: { [string] : any },
+    queryParams?: { [string] : any }
+}
 /**
  * Load the HAL Resource that is referenced by the given URL and Parameters
  * @param url the URL
- * @param params the Parameters
+ * @param params the URL Parameters
  * @return the resource
  */
-export function loadResource(url: string, params?: { [string] : any }): Promise<Resource> {
+export function loadResource(url: string, params: LoadResourceParams = {}): Promise<Resource> {
+    const realUrl = uriTemplates(url)
+        .fill(params.pathParams);
+
     return request({
-        url,
-        params
+        url: realUrl,
+        params: params.queryParams
     }).then((response) => {
         const data = response.data;
         const processed = halson(data);

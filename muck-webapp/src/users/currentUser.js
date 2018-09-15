@@ -1,5 +1,8 @@
 // @flow
 
+import {put} from 'redux-saga/effects';
+import {loadUserProfile} from "./userProfiles";
+
 /** The shape of the state for this sub-module */
 export type CurrentUserState = {
     currentUserId?: string
@@ -39,6 +42,13 @@ export function storeCurrentUserMutation(state: CurrentUserState, action: StoreC
     state.currentUserId = action.payload.userId;
 }
 
+/**
+ * Saga for applying an Access Token to the requester
+ */
+export function* storeCurrentUserSaga(action: StoreCurrentUserIdAction): Generator<any, any, any> {
+    yield put(loadUserProfile(action.payload.userId));
+}
+
 /** The representation of this sub-module */
 export const module = {
     initialState: {
@@ -49,6 +59,7 @@ export const module = {
         [STORE_CURRENT_USER_ACTION]: storeCurrentUserMutation
     },
     sagas: {
+        [STORE_CURRENT_USER_ACTION]: storeCurrentUserSaga
     },
     selectors: {
     }
