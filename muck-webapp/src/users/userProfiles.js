@@ -14,12 +14,26 @@ export type UserLogin = {
 }
 
 /**
+ * Type representing the Hypermedia links to other resources
+ */
+export type UserLinks = {
+    self: string
+};
+
+/**
+ * Type representing the data of a user
+ */
+export type UserData = {
+    email?: string,
+    displayName: string,
+};
+
+/**
  * Type representing a user
  */
 export type UserProfile = {
-    userLink: string,
-    email?: string,
-    displayName: string,
+    links: UserLinks,
+    data: UserData,
     logins: Array<UserLogin>
 };
 
@@ -91,10 +105,14 @@ export function selectUserById(state: UserProfilesState, userId: string) : ?User
 export function* loadUserProfileSaga(action: LoadUserProfileAction): Generator<any, any, any> {
     const user = yield call(loadResource, action.payload.userId);
 
-    const userProfile = {
-        userLink: user.getLink('self').href,
-        email: user.data.email,
-        displayName: user.data.displayName,
+    const userProfile: UserProfile = {
+        links: {
+            self: user.getLink('self').href
+        },
+        data: {
+            email: user.data.email,
+            displayName: user.data.displayName,
+        },
         logins: user.data.logins
     };
     yield put(storeUserProfile(userProfile));
@@ -106,7 +124,7 @@ export function* loadUserProfileSaga(action: LoadUserProfileAction): Generator<a
  * @param action the action to update from
  */
 export function storeUserProfileMutation(state: UserProfilesState, action: StoreUserProfileAction) {
-    state.users[action.payload.user.userLink] = action.payload.user;
+    state.users[action.payload.user.links.self] = action.payload.user;
 }
 
 /** The representation of this sub-module */

@@ -4,8 +4,12 @@ import * as testSubject from '../userProfiles';
 import type {StoreUserProfileAction} from "../userProfiles";
 
 const user = {
-    userLink: 'http://example.com',
-    displayName: 'Test User',
+    links: {
+        self: 'http://example.com',
+    },
+    data: {
+        displayName: 'Test User',
+    },
     logins: []
 };
 

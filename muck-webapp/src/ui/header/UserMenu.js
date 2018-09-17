@@ -19,7 +19,7 @@ export type UserMenuProps = {
  */
 export function UserMenu({user}: UserMenuProps) {
     return (
-        <Dropdown item text={user.displayName}>
+        <Dropdown item text={user.data.displayName}>
             <Dropdown.Menu>
                 <Link to='/userProfile'>
                     <Dropdown.Item>
