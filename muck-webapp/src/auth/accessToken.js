@@ -55,6 +55,24 @@ export function storeAccessTokenMutation(state: AccessTokenState, action: StoreA
 }
 
 /**
+ * Selector to get the access token that is being used
+ * @param state the state to interrogate
+ * @return The access token, if found
+ */
+export function selectAccessToken(state: AccessTokenState): ?AccessToken {
+    return state.accessToken;
+}
+
+/**
+ * Selector to get if there is an access token being used
+ * @param state the state to interrogate
+ * @return True if there is an access token, false if not
+ */
+export function selectHasAccessToken(state: AccessTokenState): boolean {
+    return state.accessToken !== undefined;
+}
+
+/**
  * Saga for applying an Access Token to the requester
  */
 export function* applyAccessTokenSaga(action: StoreAccessTokenAction): Generator<any, any, any> {
@@ -74,9 +92,13 @@ export const module = {
         [STORE_ACCESS_TOKEN_ACTION]: applyAccessTokenSaga
     },
     selectors: {
+        selectAccessToken: (state: AccessTokenState) => () => selectAccessToken(state),
+        selectHasAccessToken: (state: AccessTokenState) => () => selectHasAccessToken(state),
     }
 };
 
 /** The shape of this sub-module */
 export type AccessTokenModule = {
+    selectAccessToken: () => ?AccessToken,
+    selectHasAccessToken: () => boolean
 };
