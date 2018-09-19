@@ -27,6 +27,10 @@
           "logout": "Log Out"
         }
       }
+    },
+    "notLoggedIn": {
+      "header": "Not Logged In",
+      "message": "You must be logged in to access this page"
     }
   },
   "userProfile": {

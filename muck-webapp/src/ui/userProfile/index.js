@@ -2,6 +2,7 @@
 
 import React from 'react';
 import {UserProfileScreen} from "./UserProfileScreen";
+import LoggedIn from "../LoggedIn";
 
 const user = {
     links: {
@@ -29,6 +30,8 @@ const user = {
  */
 export default function UserProfile() {
     return (
-        <UserProfileScreen user={user}/>
+        <LoggedIn>
+            <UserProfileScreen user={user}/>
+        </LoggedIn>
     );
 }

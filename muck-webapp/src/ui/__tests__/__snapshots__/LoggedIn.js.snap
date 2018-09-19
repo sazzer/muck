@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConnectedHasAccessToken Renders correctly when the access token is missing 1`] = `<MissingAccessToken />`;
+
+exports[`ConnectedHasAccessToken Renders correctly when the access token is present 1`] = `"Present"`;
