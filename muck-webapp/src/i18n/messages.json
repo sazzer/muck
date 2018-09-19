@@ -28,5 +28,31 @@
         }
       }
     }
+  },
+  "userProfile": {
+    "data": {
+      "header": "User Profile",
+      "displayName": {
+        "label": "Name",
+        "placeholder": "Name"
+      },
+      "email": {
+        "label": "Email Address",
+        "placeholder": "Email Address"
+      },
+      "buttons": {
+        "save": "Save Changes"
+      }
+    },
+    "logins": {
+      "header": "User Login Accounts",
+      "provider": {
+        "header": "Account Provider",
+        "google": "Google"
+      },
+      "account": {
+        "header": "Account"
+      }
+    }
   }
 }
