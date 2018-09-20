@@ -46,6 +46,16 @@
       },
       "buttons": {
         "save": "Save Changes"
+      },
+      "messages": {
+        "success": {
+          "header": "Saved Changes",
+          "message": "Successfully saved changes"
+        },
+        "error": {
+          "header": "Failed to Save Changes",
+          "message": "An error occurred saving changes"
+        }
       }
     },
     "logins": {
