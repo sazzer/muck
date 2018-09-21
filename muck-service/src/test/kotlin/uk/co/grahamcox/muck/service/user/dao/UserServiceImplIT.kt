@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
 import org.springframework.beans.factory.annotation.Autowired
+import uk.co.grahamcox.muck.service.database.OptimisticLockException
 import uk.co.grahamcox.muck.service.database.ResourceNotFoundException
+import uk.co.grahamcox.muck.service.model.Identity
 import uk.co.grahamcox.muck.service.spring.SpringTestBase
 import uk.co.grahamcox.muck.service.user.UserData
 import uk.co.grahamcox.muck.service.user.UserId
@@ -42,14 +44,7 @@ internal class UserServiceImplIT : SpringTestBase() {
         val userId = UserId(UUID.randomUUID())
         val version = UUID.randomUUID()
         val now = Instant.now()
-        execute("CREATE (u:USER {id:{id}, version:{version}, created:{now}, updated:{now}, email:{email}, displayName:{displayName}})",
-                mapOf(
-                        "id" to userId.id.toString(),
-                        "version" to version.toString(),
-                        "now" to now.toString(),
-                        "email" to "graham@example.com",
-                        "displayName" to "Graham"
-                ))
+        createUser(userId, version, now, false)
 
         val user = userServiceImpl.getById(userId)
 
@@ -73,28 +68,7 @@ internal class UserServiceImplIT : SpringTestBase() {
         val userId = UserId(UUID.randomUUID())
         val version = UUID.randomUUID()
         val now = Instant.now()
-        execute("""CREATE (p:LOGIN_PROVIDER {id:"google"})""")
-        execute("""CREATE (p:LOGIN_PROVIDER {id:"twitter"})""")
-        execute("CREATE (u:USER {id:{id}, version:{version}, created:{now}, updated:{now}, email:{email}, displayName:{displayName}})",
-                mapOf(
-                        "id" to userId.id.toString(),
-                        "version" to version.toString(),
-                        "now" to now.toString(),
-                        "email" to "graham@example.com",
-                        "displayName" to "Graham"
-                ))
-        execute("""MATCH (u:USER {id:{userId}}), (p:LOGIN_PROVIDER {id:"google"}) CREATE (u)-[:LOGIN {providerId:{providerId}, displayName:{displayName}}]->(p)""",
-                mapOf(
-                        "userId" to userId.id.toString(),
-                        "providerId" to "123",
-                        "displayName" to "graham@example.com"
-                ))
-        execute("""MATCH (u:USER {id:{userId}}), (p:LOGIN_PROVIDER {id:"twitter"}) CREATE (u)-[:LOGIN {providerId:{providerId}, displayName:{displayName}}]->(p)""",
-                mapOf(
-                        "userId" to userId.id.toString(),
-                        "providerId" to "987",
-                        "displayName" to "@grahamexample"
-                ))
+        createUser(userId, version, now, true)
 
         val user = userServiceImpl.getById(userId)
 
@@ -131,28 +105,7 @@ internal class UserServiceImplIT : SpringTestBase() {
         val userId = UserId(UUID.randomUUID())
         val version = UUID.randomUUID()
         val now = Instant.now()
-        execute("""CREATE (p:LOGIN_PROVIDER {id:"google"})""")
-        execute("""CREATE (p:LOGIN_PROVIDER {id:"twitter"})""")
-        execute("CREATE (u:USER {id:{id}, version:{version}, created:{now}, updated:{now}, email:{email}, displayName:{displayName}})",
-                mapOf(
-                        "id" to userId.id.toString(),
-                        "version" to version.toString(),
-                        "now" to now.toString(),
-                        "email" to "graham@example.com",
-                        "displayName" to "Graham"
-                ))
-        execute("""MATCH (u:USER {id:{userId}}), (p:LOGIN_PROVIDER {id:"google"}) CREATE (u)-[:LOGIN {providerId:{providerId}, displayName:{displayName}}]->(p)""",
-                mapOf(
-                        "userId" to userId.id.toString(),
-                        "providerId" to "123",
-                        "displayName" to "graham@example.com"
-                ))
-        execute("""MATCH (u:USER {id:{userId}}), (p:LOGIN_PROVIDER {id:"twitter"}) CREATE (u)-[:LOGIN {providerId:{providerId}, displayName:{displayName}}]->(p)""",
-                mapOf(
-                        "userId" to userId.id.toString(),
-                        "providerId" to "987",
-                        "displayName" to "@grahamexample"
-                ))
+        createUser(userId, version, now, true)
 
         val user = userServiceImpl.getByProvider("google", "123")
 
@@ -254,5 +207,136 @@ internal class UserServiceImplIT : SpringTestBase() {
         val loaded = userServiceImpl.getById(created.identity.id)
 
         Assertions.assertEquals(created, loaded)
+    }
+
+    /**
+     * Test updating the user data for a user
+     */
+    @Test
+    fun testUpdateUserData() {
+        val userId = UserId(UUID.randomUUID())
+        createUser(userId, UUID.randomUUID(), Instant.now().minusSeconds(30), true)
+
+        val user = userServiceImpl.getById(userId)
+
+        val updated = userServiceImpl.update(user.identity,
+                UserData(
+                        email = "newEmail@other.domain",
+                        displayName = "New User",
+                        logins = setOf(
+                                UserLogin(
+                                        provider = "facebook",
+                                        providerId = "1234567",
+                                        displayName = "New User"
+                                )
+                        )
+                ))
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(user.identity.id, updated.identity.id) },
+                Executable { Assertions.assertEquals(user.identity.created, updated.identity.created) },
+                Executable { Assertions.assertNotEquals(user.identity.version, updated.identity.version) },
+                Executable { Assertions.assertNotEquals(user.identity.updated, updated.identity.updated) },
+
+                Executable { Assertions.assertEquals("newEmail@other.domain", updated.data.email) },
+                Executable { Assertions.assertEquals("New User", updated.data.displayName) },
+                Executable { Assertions.assertEquals(1, updated.data.logins.size) },
+
+                Executable { Assertions.assertTrue(updated.data.logins.contains(UserLogin("facebook", "1234567", "New User"))) }
+        )
+
+        val loaded = userServiceImpl.getById(updated.identity.id)
+
+        Assertions.assertEquals(updated, loaded)
+    }
+
+    /**
+     * Test updating the user data for a user that doesn't exist
+     */
+    @Test
+    fun testUpdateUnknownUser() {
+        val userId = UserId(UUID.randomUUID())
+
+        val e = Assertions.assertThrows(ResourceNotFoundException::class.java) {
+            userServiceImpl.update(Identity(
+                    id = userId,
+                    version = UUID.randomUUID(),
+                    created = Instant.now(),
+                    updated = Instant.now()),
+                    UserData(
+                            email = "newEmail@other.domain",
+                            displayName = "New User",
+                            logins = setOf(
+                                    UserLogin(
+                                            provider = "facebook",
+                                            providerId = "1234567",
+                                            displayName = "New User"
+                                    )
+                            )
+                    ))
+        }
+
+        Assertions.assertEquals(userId, e.id)
+    }
+
+
+    /**
+     * Test updating the user data for a user that exists but has a different version
+     */
+    @Test
+    fun testUpdateUserWrongVersion() {
+        val userId = UserId(UUID.randomUUID())
+        createUser(userId, UUID.randomUUID(), Instant.now().minusSeconds(30), true)
+
+        val e = Assertions.assertThrows(OptimisticLockException::class.java) {
+            userServiceImpl.update(Identity(
+                    id = userId,
+                    version = UUID.randomUUID(),
+                    created = Instant.now(),
+                    updated = Instant.now()),
+                    UserData(
+                            email = "newEmail@other.domain",
+                            displayName = "New User",
+                            logins = setOf(
+                                    UserLogin(
+                                            provider = "facebook",
+                                            providerId = "1234567",
+                                            displayName = "New User"
+                                    )
+                            )
+                    ))
+        }
+
+        Assertions.assertEquals(userId, e.id)
+    }
+
+    /**
+     * Create the user record to use in the tests
+     */
+    private fun createUser(userId: UserId, version: UUID, now: Instant, withLogins: Boolean) {
+        execute("""CREATE (p:LOGIN_PROVIDER {id:"google"})""")
+        execute("""CREATE (p:LOGIN_PROVIDER {id:"twitter"})""")
+        execute("CREATE (u:USER {id:{id}, version:{version}, created:{now}, updated:{now}, email:{email}, displayName:{displayName}})",
+                mapOf(
+                        "id" to userId.id.toString(),
+                        "version" to version.toString(),
+                        "now" to now.toString(),
+                        "email" to "graham@example.com",
+                        "displayName" to "Graham"
+                ))
+        if (withLogins) {
+            execute("""MATCH (u:USER {id:{userId}}), (p:LOGIN_PROVIDER {id:"google"}) CREATE (u)-[:LOGIN {providerId:{providerId}, displayName:{displayName}}]->(p)""",
+                    mapOf(
+                            "userId" to userId.id.toString(),
+                            "providerId" to "123",
+                            "displayName" to "graham@example.com"
+                    ))
+            execute("""MATCH (u:USER {id:{userId}}), (p:LOGIN_PROVIDER {id:"twitter"}) CREATE (u)-[:LOGIN {providerId:{providerId}, displayName:{displayName}}]->(p)""",
+                    mapOf(
+                            "userId" to userId.id.toString(),
+                            "providerId" to "987",
+                            "displayName" to "@grahamexample"
+                    ))
+        }
     }
 }

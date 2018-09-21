@@ -5,6 +5,7 @@ import org.neo4j.driver.v1.exceptions.NoSuchRecordException
 import org.slf4j.LoggerFactory
 import org.springframework.transaction.annotation.Transactional
 import uk.co.grahamcox.muck.service.database.Neo4jOperations
+import uk.co.grahamcox.muck.service.database.OptimisticLockException
 import uk.co.grahamcox.muck.service.database.ResourceNotFoundException
 import uk.co.grahamcox.muck.service.model.Identity
 import uk.co.grahamcox.muck.service.user.*
@@ -38,7 +39,7 @@ class UserServiceImpl(
             WHERE
                 user.id = {id}
             RETURN
-                user,[ (user)-[login:LOGIN]->(provider:LOGIN_PROVIDER) | [ login, provider ] ] AS logins"""
+                user, [ (user)-[login:LOGIN]->(provider:LOGIN_PROVIDER) | [ login, provider ] ] AS logins"""
 
         LOG.debug("Loading user with ID: {}", id)
 
@@ -69,7 +70,7 @@ class UserServiceImpl(
                 p1.id = {provider}
                 AND l1.providerId = {providerId}
             RETURN
-                user,[ (user)-[login:LOGIN]->(provider:LOGIN_PROVIDER) | [ login, provider ] ] AS logins"""
+                user, [ (user)-[login:LOGIN]->(provider:LOGIN_PROVIDER) | [ login, provider ] ] AS logins"""
 
         LOG.debug("Loading user with ID {} at Provider {}", providerId, provider)
 
@@ -98,14 +99,15 @@ class UserServiceImpl(
         )
 
         neo4jOperations.execute("""
-            CREATE (u:USER {
-                id: {id},
-                version: {version},
-                created: {created},
-                updated: {updated},
-                email: {email},
-                displayName: {displayName}
-            })
+            CREATE
+                (u:USER {
+                    id: {id},
+                    version: {version},
+                    created: {created},
+                    updated: {updated},
+                    email: {email},
+                    displayName: {displayName}
+                })
         """, mapOf(
                 "id" to identity.id.id.toString(),
                 "version" to identity.version.toString(),
@@ -115,25 +117,72 @@ class UserServiceImpl(
                 "displayName" to user.displayName
         ))
 
-        user.logins.forEach { login ->
-            neo4jOperations.execute("MERGE (provider:LOGIN_PROVIDER {id: {provider}})", mapOf(
-                    "provider" to login.provider
-            ))
-            neo4jOperations.execute("""
-            MATCH
-                (u:USER {id:{userId}}),
-                (p:LOGIN_PROVIDER {id:{provider}})
-            CREATE
-                (u)-[:LOGIN {providerId:{providerId}, displayName:{displayName}}]->(p)
-            """, mapOf(
-                    "userId" to identity.id.id.toString(),
-                    "provider" to login.provider,
-                    "providerId" to login.providerId,
-                    "displayName" to login.displayName
-            ))
-        }
+        createUserLogins(user, identity)
 
         return UserResource(identity, user)
+    }
+
+    /**
+     * Update a user with the given data.
+     */
+    @Transactional
+    override fun update(oldIdentity: Identity<UserId>, user: UserData): UserResource {
+        val newIdentity = Identity(
+                id = oldIdentity.id,
+                version = UUID.randomUUID(),
+                created = oldIdentity.created,
+                updated = clock.instant()
+        )
+
+        // Update the user data itself
+        val updateCounters = neo4jOperations.execute("""
+            MATCH
+                (u:USER { id: {id}, version: {version} })
+            SET
+                u.email = {email},
+                u.displayName = {displayName},
+                u.version = {newVersion},
+                u.updated = {newUpdated}
+        """, mapOf(
+                "id" to oldIdentity.id.id.toString(),
+                "version" to oldIdentity.version.toString(),
+                "newVersion" to newIdentity.version.toString(),
+                "newUpdated" to newIdentity.updated.toString(),
+                "email" to user.email,
+                "displayName" to user.displayName
+        ))
+        if (updateCounters.propertiesSet() == 0) {
+            // Nothing changed, so either the ID or the Version is wrong
+            val counts = neo4jOperations.queryOne("""
+                MATCH
+                    (u:USER { id: {id} })
+                RETURN
+                    COUNT(u) AS c
+            """, mapOf(
+                    "id" to oldIdentity.id.id.toString()
+            ))
+
+            if (counts["c"].asInt() == 0) {
+                throw ResourceNotFoundException(oldIdentity.id)
+            } else {
+                throw OptimisticLockException(oldIdentity.id)
+            }
+        }
+
+        // Remove the links to User Logins
+        neo4jOperations.execute("""
+            MATCH
+                (u:USER { id: {id} })-[l:LOGIN]->(p:LOGIN_PROVIDER)
+            DELETE
+                l
+        """, mapOf(
+                "id" to newIdentity.id.id.toString()
+        ))
+
+        // Then recreate them as needed
+        createUserLogins(user, newIdentity)
+
+        return UserResource(newIdentity, user)
     }
 
     /**
@@ -167,5 +216,28 @@ class UserServiceImpl(
                         logins = logins
                 )
         )
+    }
+
+    /**
+     * Helper to create User Logins in the database
+     * @param user The user data to get the logins from
+     * @param identity The identity of the user
+     */
+    private fun createUserLogins(user: UserData, identity: Identity<UserId>) {
+        user.logins.forEach { login ->
+            neo4jOperations.execute("""
+                MATCH
+                    (u:USER {id:{userId}})
+                MERGE
+                    (p:LOGIN_PROVIDER {id:{provider}})
+                CREATE
+                    (u)-[:LOGIN {providerId:{providerId}, displayName:{displayName}}]->(p)
+                """, mapOf(
+                    "userId" to identity.id.id.toString(),
+                    "provider" to login.provider,
+                    "providerId" to login.providerId,
+                    "displayName" to login.displayName
+            ))
+        }
     }
 }
