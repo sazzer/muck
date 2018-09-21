@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -29,6 +30,9 @@ import uk.co.grahamcox.muck.service.user.UserId
         AcceptanceTestConfig::class
 )
 class AcceptanceTestBase {
+    /** The port that the server is running on */
+    @LocalServerPort
+    private lateinit var localPort: String
 
     /** The means to call the database */
     @Autowired
@@ -114,7 +118,7 @@ class AcceptanceTestBase {
      */
     protected fun convertReturnedUri(input: Any?): String? {
         return when (input) {
-            is String -> UriComponentsBuilder.fromUriString(input!!)
+            is String -> UriComponentsBuilder.fromUriString(input)
                     .port(-1)
                     .build()
                     .toUriString()
@@ -122,5 +126,16 @@ class AcceptanceTestBase {
             else -> throw IllegalArgumentException("Provided URI was not a string")
         }
     }
+
+    /**
+     * Helper to convert the provided URI to have the correct scheme, host and port for the test service
+     */
+    protected fun buildUri(input: String) =
+            UriComponentsBuilder.fromUriString(input)
+                    .scheme("http")
+                    .host("localhost")
+                    .port(localPort)
+                    .build()
+                    .toUriString()
 
 }

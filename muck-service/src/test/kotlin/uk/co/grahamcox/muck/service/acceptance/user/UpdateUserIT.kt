@@ -65,18 +65,24 @@ class UpdateUserIT : AcceptanceTestBase() {
                 Executable { Assertions.assertEquals(HttpStatus.OK, response.statusCode) },
                 Executable { Assertions.assertTrue(response.headers.contentType!!.isCompatibleWith(MediaType.valueOf("application/hal+json"))) },
 
-                Executable { Assertions.assertEquals("http://localhost/api/users/$USER_ID",
-                        convertReturnedUri(response.getValue("/body/_links/self/href"))) },
-                Executable { Assertions.assertEquals("application/hal+json", response.getValue("/body/_links/self/type")) },
-                Executable { Assertions.assertEquals(false, response.getValue("/body/_links/self/templated")) },
-
-                Executable { Assertions.assertEquals("new@user.com", response.getValue("/body/email")) },
-                Executable { Assertions.assertEquals("New User", response.getValue("/body/displayName")) },
-
-                Executable { Assertions.assertEquals(1.0, response.getValue("count(/body/logins)")) },
-                Executable { Assertions.assertEquals("facebook", response.getValue("/body/logins[1]/provider")) },
-                Executable { Assertions.assertEquals("1232123", response.getValue("/body/logins[1]/providerId")) },
-                Executable { Assertions.assertEquals("New User", response.getValue("/body/logins[1]/displayName")) }
+                Executable { Assertions.assertEquals(convertFromJson("""{
+                    "_links": {
+                        "self": {
+                            "href": "${buildUri("/api/users/$USER_ID")}",
+                            "templated": false,
+                            "type": "application/hal+json"
+                        }
+                    },
+                    "email": "new@user.com",
+                    "displayName": "New User",
+                    "logins": [
+                        {
+                            "provider": "facebook",
+                            "providerId": "1232123",
+                            "displayName": "New User"
+                        }
+                    ]
+                }"""), response.getValue("/body")) }
         )
     }
 
@@ -119,18 +125,24 @@ class UpdateUserIT : AcceptanceTestBase() {
                 Executable { Assertions.assertEquals(HttpStatus.OK, response.statusCode) },
                 Executable { Assertions.assertTrue(response.headers.contentType!!.isCompatibleWith(MediaType.valueOf("application/hal+json"))) },
 
-                Executable { Assertions.assertEquals("http://localhost/api/users/$USER_ID",
-                        convertReturnedUri(response.getValue("/body/_links/self/href"))) },
-                Executable { Assertions.assertEquals("application/hal+json", response.getValue("/body/_links/self/type")) },
-                Executable { Assertions.assertEquals(false, response.getValue("/body/_links/self/templated")) },
-
-                Executable { Assertions.assertEquals("new@user.com", response.getValue("/body/email")) },
-                Executable { Assertions.assertEquals("New User", response.getValue("/body/displayName")) },
-
-                Executable { Assertions.assertEquals(1.0, response.getValue("count(/body/logins)")) },
-                Executable { Assertions.assertEquals("facebook", response.getValue("/body/logins[1]/provider")) },
-                Executable { Assertions.assertEquals("1232123", response.getValue("/body/logins[1]/providerId")) },
-                Executable { Assertions.assertEquals("New User", response.getValue("/body/logins[1]/displayName")) }
+                Executable { Assertions.assertEquals(convertFromJson("""{
+                    "_links": {
+                        "self": {
+                            "href": "${buildUri("/api/users/$USER_ID")}",
+                            "templated": false,
+                            "type": "application/hal+json"
+                        }
+                    },
+                    "email": "new@user.com",
+                    "displayName": "New User",
+                    "logins": [
+                        {
+                            "provider": "facebook",
+                            "providerId": "1232123",
+                            "displayName": "New User"
+                        }
+                    ]
+                }"""), response.getValue("/body")) }
         )
     }
 }
