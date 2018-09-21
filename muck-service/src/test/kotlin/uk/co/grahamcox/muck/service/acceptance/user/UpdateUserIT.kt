@@ -49,17 +49,17 @@ class UpdateUserIT : AcceptanceTestBase() {
         authenticatedAs(UserId(USER_ID))
 
         val response = requester.put("/api/users/$USER_ID",
-                mapOf(
-                        "email" to "new@user.com",
-                        "displayName" to "New User",
-                        "logins" to listOf(
-                                mapOf(
-                                        "provider" to "facebook",
-                                        "providerId" to "1232123",
-                                        "displayName" to "New User"
-                                )
-                        )
-                ))
+                convertFromJson("""{
+                    "email": "new@user.com",
+                    "displayName": "New User",
+                    "logins": [
+                        {
+                            "provider": "facebook",
+                            "providerId": "1232123",
+                            "displayName": "New User"
+                        }
+                    ]
+                }"""))
 
         Assertions.assertAll(
                 Executable { Assertions.assertEquals(HttpStatus.OK, response.statusCode) },
@@ -101,17 +101,17 @@ class UpdateUserIT : AcceptanceTestBase() {
         authenticatedAs(UserId(USER_ID))
 
         requester.put("/api/users/$USER_ID",
-                mapOf(
-                        "email" to "new@user.com",
-                        "displayName" to "New User",
-                        "logins" to listOf(
-                                mapOf(
-                                        "provider" to "facebook",
-                                        "providerId" to "1232123",
-                                        "displayName" to "New User"
-                                )
-                        )
-                ))
+                convertFromJson("""{
+                    "email": "new@user.com",
+                    "displayName": "New User",
+                    "logins": [
+                        {
+                            "provider": "facebook",
+                            "providerId": "1232123",
+                            "displayName": "New User"
+                        }
+                    ]
+                }"""))
 
         val response = requester.get("/api/users/$USER_ID")
 

@@ -1,5 +1,6 @@
 package uk.co.grahamcox.muck.service.acceptance
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,6 +54,10 @@ class AcceptanceTestBase {
     @Autowired
     private lateinit var restTemplate: RestTemplate
 
+    /** The Object Mapper to use */
+    @Autowired
+    private lateinit var objectMapper: ObjectMapper
+
     /** The mock server to bind the rest template to */
     protected lateinit var mockServer : MockRestServiceServer
 
@@ -87,6 +92,12 @@ class AcceptanceTestBase {
     protected fun execute(query: String, parameters: Map<String, Any?> = emptyMap()) {
         neo4jOperations.execute(query, parameters)
     }
+
+    /**
+     * Convert the given string, read as JSON, into a Java Object
+     */
+    protected fun convertFromJson(json: String): Any =
+            objectMapper.readValue(json.toByteArray(Charsets.UTF_8), Any::class.java)
 
     /**
      * Generate an Access Token valid for the given User ID and use it for future requests
