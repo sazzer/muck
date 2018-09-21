@@ -22,9 +22,22 @@ class ListServicesIT : AcceptanceTestBase() {
                 Executable { Assertions.assertEquals(HttpStatus.OK, response.statusCode) },
                 Executable { Assertions.assertTrue(response.headers.contentType!!.isCompatibleWith(MediaType.valueOf("application/hal+json"))) },
 
-                Executable { Assertions.assertEquals("google", response.getValue("/body/_links/services[1]/name")) },
-                Executable { Assertions.assertEquals("http://localhost/api/authentication/external/google/start",
-                        convertReturnedUri(response.getValue("/body/_links/services[1]/href"))) }
+                Executable { Assertions.assertEquals(convertFromJson("""{
+                    "_links": {
+                        "self": {
+                            "href": "${buildUri("/api/authentication/external/")}",
+                            "templated": false,
+                            "type": "application/hal+json"
+                        },
+                        "services": [
+                            {
+                                "name": "google",
+                                "href": "${buildUri("/api/authentication/external/google/start")}",
+                                "templated": false
+                            }
+                        ]
+                    }
+                }"""), response.getValue("/body")) }
         )
     }
 }

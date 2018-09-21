@@ -24,10 +24,12 @@ class StartAuthenticationIT : AcceptanceTestBase() {
                 Executable { Assertions.assertEquals(HttpStatus.NOT_FOUND, response.statusCode) },
                 Executable { Assertions.assertEquals(MediaType.valueOf("application/problem+json"), response.headers.contentType) },
 
-                Executable { Assertions.assertEquals("tag:grahamcox.co.uk,2018,problems/unknown-authentication-service", response.getValue("/body/type")) },
-                Executable { Assertions.assertEquals("The requested Authentication Service was unknown", response.getValue("/body/title")) },
-                Executable { Assertions.assertEquals(404, response.getValue("/body/status")) },
-                Executable { Assertions.assertEquals("unknown", response.getValue("/body/authenticationService")) }
+                Executable { Assertions.assertEquals(convertFromJson("""{
+                    "type": "tag:grahamcox.co.uk,2018,problems/unknown-authentication-service",
+                    "title": "The requested Authentication Service was unknown",
+                    "status": 404,
+                    "authenticationService": "unknown"
+                }"""), response.getValue("/body")) }
         )
     }
 

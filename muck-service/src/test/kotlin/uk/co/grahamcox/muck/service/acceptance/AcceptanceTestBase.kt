@@ -72,8 +72,7 @@ class AcceptanceTestBase {
     fun setupMockServer() {
         mockServer = MockRestServiceServer.bindTo(restTemplate).build()
     }
-
-
+    
     /**
      * Clear the database before each test
      */
@@ -91,13 +90,6 @@ class AcceptanceTestBase {
     }
 
     /**
-     * Execute the given query against the database
-     */
-    protected fun execute(query: String, parameters: Map<String, Any?> = emptyMap()) {
-        neo4jOperations.execute(query, parameters)
-    }
-
-    /**
      * Convert the given string, read as JSON, into a Java Object
      */
     protected fun convertFromJson(json: String): Any =
@@ -111,20 +103,6 @@ class AcceptanceTestBase {
         val bearerToken = accessTokenSerializer.serialize(accessToken)
 
         requester.accessToken = bearerToken
-    }
-
-    /**
-     * Helper to convert the incoming URI String to one without a port component
-     */
-    protected fun convertReturnedUri(input: Any?): String? {
-        return when (input) {
-            is String -> UriComponentsBuilder.fromUriString(input)
-                    .port(-1)
-                    .build()
-                    .toUriString()
-            null -> throw NullPointerException("Provided URI was null")
-            else -> throw IllegalArgumentException("Provided URI was not a string")
-        }
     }
 
     /**

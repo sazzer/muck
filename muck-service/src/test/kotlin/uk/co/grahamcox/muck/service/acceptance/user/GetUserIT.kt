@@ -39,9 +39,11 @@ class GetUserIT : AcceptanceTestBase() {
                 Executable { Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode) },
                 Executable { Assertions.assertEquals(MediaType.valueOf("application/problem+json"), response.headers.contentType) },
 
-                Executable { Assertions.assertEquals("tag:grahamcox.co.uk,2018,problems/missing-access-token", response.getValue("/body/type")) },
-                Executable { Assertions.assertEquals("No Access Token was provided", response.getValue("/body/title")) },
-                Executable { Assertions.assertEquals(401, response.getValue("/body/status")) }
+                Executable { Assertions.assertEquals(convertFromJson("""{
+                    "type": "tag:grahamcox.co.uk,2018,problems/missing-access-token",
+                    "title": "No Access Token was provided",
+                    "status": 401
+                }"""), response.getValue("/body")) }
         )
     }
 
@@ -57,9 +59,11 @@ class GetUserIT : AcceptanceTestBase() {
                 Executable { Assertions.assertEquals(HttpStatus.NOT_FOUND, response.statusCode) },
                 Executable { Assertions.assertEquals(MediaType.valueOf("application/problem+json"), response.headers.contentType) },
 
-                Executable { Assertions.assertEquals("tag:grahamcox.co.uk,2018,problems/users/unknown-user", response.getValue("/body/type")) },
-                Executable { Assertions.assertEquals("The requested user was not found", response.getValue("/body/title")) },
-                Executable { Assertions.assertEquals(404, response.getValue("/body/status")) }
+                Executable { Assertions.assertEquals(convertFromJson("""{
+                    "type": "tag:grahamcox.co.uk,2018,problems/users/unknown-user",
+                    "title": "The requested user was not found",
+                    "status": 404
+                }"""), response.getValue("/body")) }
         )
     }
 
@@ -75,9 +79,11 @@ class GetUserIT : AcceptanceTestBase() {
                 Executable { Assertions.assertEquals(HttpStatus.FORBIDDEN, response.statusCode) },
                 Executable { Assertions.assertEquals(MediaType.valueOf("application/problem+json"), response.headers.contentType) },
 
-                Executable { Assertions.assertEquals("tag:grahamcox.co.uk,2018,problems/access-denied", response.getValue("/body/type")) },
-                Executable { Assertions.assertEquals("Access denied to this resource", response.getValue("/body/title")) },
-                Executable { Assertions.assertEquals(403, response.getValue("/body/status")) }
+                Executable { Assertions.assertEquals(convertFromJson("""{
+                    "type": "tag:grahamcox.co.uk,2018,problems/access-denied",
+                    "title": "Access denied to this resource",
+                    "status": 403
+                }"""), response.getValue("/body")) }
         )
     }
 
@@ -106,18 +112,24 @@ class GetUserIT : AcceptanceTestBase() {
                 Executable { Assertions.assertEquals(HttpStatus.OK, response.statusCode) },
                 Executable { Assertions.assertTrue(response.headers.contentType!!.isCompatibleWith(MediaType.valueOf("application/hal+json"))) },
 
-                Executable { Assertions.assertEquals("http://localhost/api/users/$USER_ID",
-                        convertReturnedUri(response.getValue("/body/_links/self/href"))) },
-                Executable { Assertions.assertEquals("application/hal+json", response.getValue("/body/_links/self/type")) },
-                Executable { Assertions.assertEquals(false, response.getValue("/body/_links/self/templated")) },
-
-                Executable { Assertions.assertEquals("test@example.com", response.getValue("/body/email")) },
-                Executable { Assertions.assertEquals("Test User", response.getValue("/body/displayName")) },
-
-                Executable { Assertions.assertEquals(1.0, response.getValue("count(/body/logins)")) },
-                Executable { Assertions.assertEquals("google", response.getValue("/body/logins[1]/provider")) },
-                Executable { Assertions.assertEquals("1234321", response.getValue("/body/logins[1]/providerId")) },
-                Executable { Assertions.assertEquals("Test User Account", response.getValue("/body/logins[1]/displayName")) }
+                Executable { Assertions.assertEquals(convertFromJson("""{
+                    "_links": {
+                        "self": {
+                            "href": "${buildUri("/api/users/$USER_ID")}",
+                            "templated": false,
+                            "type": "application/hal+json"
+                        }
+                    },
+                    "email": "test@example.com",
+                    "displayName": "Test User",
+                    "logins": [
+                        {
+                            "provider": "google",
+                            "providerId": "1234321",
+                            "displayName": "Test User Account"
+                        }
+                    ]
+                }"""), response.getValue("/body")) }
         )
     }
 }
