@@ -9,8 +9,7 @@ import uk.co.grahamcox.muck.service.database.ResourceNotFoundException
 import uk.co.grahamcox.muck.service.rest.Problem
 import uk.co.grahamcox.muck.service.rest.hal.Link
 import uk.co.grahamcox.muck.service.rest.hal.buildUri
-import uk.co.grahamcox.muck.service.user.UserId
-import uk.co.grahamcox.muck.service.user.UserService
+import uk.co.grahamcox.muck.service.user.*
 import java.net.URI
 import java.util.*
 
@@ -45,25 +44,70 @@ class UserController(private val userService: UserService) {
         }
 
         val user = userService.getById(userId)
-
-        val result = UserModel(
-                email = user.data.email,
-                displayName = user.data.displayName,
-                logins = user.data.logins
-                        .map { UserLoginModel(
-                                provider = it.provider,
-                                providerId = it.providerId,
-                                displayName = it.displayName
-                        ) }
-                        .sortedWith(compareBy(UserLoginModel::provider, UserLoginModel::displayName, UserLoginModel::providerId)),
-                links = UserLinks(
-                        self = Link(
-                                href = ::getUser.buildUri("rawUserId" to rawUserId)
-                        )
-                )
-        )
+        val result = translateUserResource(user)
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf("application/hal+json"))
                 .body(result)
+    }
+
+    /**
+     * Update the details of a user by their unique ID
+     */
+    @RequestMapping("/{id}", method = [RequestMethod.PUT])
+    fun updateUser(@PathVariable("id") rawUserId: UUID,
+                   @RequestBody userData: UserInputModel,
+                   currentUser: UserId,
+                   authorizer: Authorizer) : ResponseEntity<UserModel> {
+        val userId = UserId(rawUserId)
+
+        authorizer {
+            isUser(userId)
+        }
+
+        val user = userService.getById(userId)
+        val updated = userService.update(user.identity, UserData(
+                email = userData.email,
+                displayName = userData.displayName,
+                logins = userData.logins.map {
+                    UserLogin(
+                            provider = it.provider,
+                            providerId = it.providerId,
+                            displayName = it.displayName
+                    )
+                }.toSet()
+        ))
+
+        val result = translateUserResource(updated)
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf("application/hal+json"))
+                .body(result)
+    }
+
+    /**
+     * Translate the user resource into an API model
+     * @param user The user to translate
+     * @return the API version
+     */
+    private fun translateUserResource(user: UserResource): UserModel {
+        return UserModel(
+                email = user.data.email,
+                displayName = user.data.displayName,
+                logins = user.data.logins
+                        .map {
+                            UserLoginModel(
+                                    provider = it.provider,
+                                    providerId = it.providerId,
+                                    displayName = it.displayName
+                            )
+                        }
+                        .sortedWith(compareBy(UserLoginModel::provider,
+                                UserLoginModel::displayName,
+                                UserLoginModel::providerId)),
+                links = UserLinks(
+                        self = Link(
+                                href = ::getUser.buildUri("rawUserId" to user.identity.id.id)
+                        )
+                )
+        )
     }
 }

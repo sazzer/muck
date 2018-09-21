@@ -1,5 +1,6 @@
 package uk.co.grahamcox.muck.service.user.rest
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import uk.co.grahamcox.muck.service.rest.hal.Link
 
@@ -27,5 +28,13 @@ data class UserModel(
         val email: String?,
         val displayName: String,
         val logins: List<UserLoginModel>
+)
 
+/**
+ * The representation of a user for input purposes
+ */
+data class UserInputModel(
+        val email: String?,
+        val displayName: String,
+        val logins: List<UserLoginModel>
 )
