@@ -9,15 +9,17 @@ import type {UserData} from "../../users/userProfiles";
  * The props for the User Profile Data area
  */
 type UserProfileDataProps = {
-    user: UserData
+    user: UserData,
+
+    onUpdate: (UserData, (string | null) => void) => void
 };
 
 /**
  * The state for the User Profile Data area
  */
 type UserProfileDataState = {
-    displayName?: string,
-    email?: string,
+    displayName: string,
+    email: string,
     formState: Symbol,
     formResult?: Symbol
 };
@@ -45,8 +47,8 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
     constructor(props: UserProfileDataProps) {
         super(props);
         this.state = {
-            email: props.user.email,
-            displayName: props.user.displayName,
+            email: props.user.email || '',
+            displayName: props.user.displayName || '',
             formState: FORM_STATE_INITIAL
         }
     }
@@ -57,8 +59,8 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
      */
     componentWillReceiveProps(props: UserProfileDataProps) {
         this.setState({
-            email: props.user.email,
-            displayName: props.user.displayName,
+            email: props.user.email || '',
+            displayName: props.user.displayName || '',
             formState: FORM_STATE_INITIAL
         })
     }
@@ -75,7 +77,7 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
                               success={this.state.formResult === FORM_RESULT_SUCCESS}
                               error={this.state.formResult === FORM_RESULT_ERROR}
                               onSubmit={this._handleSubmit}>
-                            <Form.Field required>
+                            <Form.Field required error={this.state.displayName === '' && this.state.formResult === FORM_RESULT_ERROR}>
                                 <label>
                                     <Interpolate i18nKey="userProfile.data.displayName.label" />
                                 </label>
@@ -84,7 +86,7 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
                                        onChange={this._handleChangeDisplayName}
                                        autoFocus />
                             </Form.Field>
-                            <Form.Field required>
+                            <Form.Field required error={this.state.email === '' && this.state.formResult === FORM_RESULT_ERROR}>
                                 <label>
                                     <Interpolate i18nKey="userProfile.data.email.label" />
                                 </label>
@@ -117,7 +119,8 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
     _handleChangeDisplayName = (e: SyntheticEvent<HTMLInputElement>) => {
         this.setState({
             displayName: e.currentTarget.value,
-            formState: FORM_STATE_EDITED
+            formState: FORM_STATE_EDITED,
+            formResult: undefined
         });
     };
 
@@ -129,7 +132,8 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
     _handleChangeEmail = (e: SyntheticEvent<HTMLInputElement>) => {
         this.setState({
             email: e.currentTarget.value,
-            formState: FORM_STATE_EDITED
+            formState: FORM_STATE_EDITED,
+            formResult: undefined
         });
     };
 
@@ -139,22 +143,34 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
      */
     _handleSubmit = () => {
         if (this.state.formState === FORM_STATE_EDITED) {
-            this.setState({
-                formState: FORM_STATE_SAVING
-            });
-
-            const user = {
-                email: this.state.email,
-                displayName: this.state.displayName
-            };
-            console.log(user);
-
-            setTimeout(() => {
+            if (this.state.email === '' || this.state.displayName === '') {
                 this.setState({
-                    formState: FORM_STATE_EDITED,
                     formResult: FORM_RESULT_ERROR
                 });
-            }, 5000)
+            } else {
+                this.setState({
+                    formState: FORM_STATE_SAVING
+                });
+
+                const user = {
+                    email: this.state.email,
+                    displayName: this.state.displayName
+                };
+
+                this.props.onUpdate(user, (err) => {
+                    if (err) {
+                        this.setState({
+                            formState: FORM_STATE_EDITED,
+                            formResult: FORM_RESULT_ERROR
+                        });
+                    } else {
+                        this.setState({
+                            formState: FORM_STATE_EDITED,
+                            formResult: FORM_RESULT_SUCCESS
+                        });
+                    }
+                });
+            }
         }
     }
 }

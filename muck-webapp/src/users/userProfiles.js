@@ -58,11 +58,24 @@ export type StoreUserProfileAction = {
     }
 }
 
+/** The shape of the action for updating the user profile */
+export type UpdateUserProfileAction = {
+    type: string,
+    payload: {
+        data: UserData,
+        logins: Array<UserLogin>,
+        callback: (string | null) => void
+    }
+};
+
 /** Action key for loading a user from the server */
 const LOAD_USER_PROFILE_ACTION = "USERS/LOAD_USER_PROFILE_ACTION";
 
 /** Action key for storing a user into the store */
 const STORE_USER_PROFILE_ACTION = "USERS/STORE_USER_PROFILE_ACTION";
+
+/** Action key for updating a user on the server */
+const UPDATE_USER_PROFILE_ACTION = "USERS/UPDATE_USER_PROFILE_ACTION";
 
 /**
  * Construct the action for loading a user from the server
@@ -88,6 +101,23 @@ export function storeUserProfile(user: UserProfile) : StoreUserProfileAction {
             user
         }
     };
+}
+
+/**
+ * Construct the action for updating a user on the server
+ * @param userData the user data to save
+ * @param logins the user logins to save
+ * @param callback optional callback to trigger after the update
+ */
+export function updateUserProfile(userData: UserData, logins: Array<UserLogin>, callback: (string | null) => void) : UpdateUserProfileAction {
+    return {
+        type: UPDATE_USER_PROFILE_ACTION,
+        payload: {
+            data: userData,
+            logins,
+            callback
+        }
+    }
 }
 
 /**
@@ -119,6 +149,13 @@ export function* loadUserProfileSaga(action: LoadUserProfileAction): Generator<a
 }
 
 /**
+ * Saga for updating the user profile on the server
+ */
+export function* updateUserProfileSaga(action: UpdateUserProfileAction): Generator<any, any, any> {
+    action.payload.callback(null);
+}
+
+/**
  * Mutation for storing the user profile into the state
  * @param state the state to update
  * @param action the action to update from
@@ -133,12 +170,14 @@ export const module = {
         users: {}
     },
     actions: {
+        updateUserProfile
     },
     mutations: {
         [STORE_USER_PROFILE_ACTION]: storeUserProfileMutation
     },
     sagas: {
-        [LOAD_USER_PROFILE_ACTION]: loadUserProfileSaga
+        [LOAD_USER_PROFILE_ACTION]: loadUserProfileSaga,
+        [UPDATE_USER_PROFILE_ACTION]: updateUserProfileSaga
     },
     selectors: {
         selectUserById: (state: UserProfilesState) => (userId: string) => selectUserById(state, userId)
@@ -147,5 +186,7 @@ export const module = {
 
 /** The shape of this sub-module */
 export type UserProfilesModule = {
+    updateUserProfile: (UserData, Array<UserLogin>, (string | null) => void) => void,
+
     selectUserById: (string) => ?UserProfile
 };
