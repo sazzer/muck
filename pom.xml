@@ -27,13 +27,13 @@
         <version.activation>1.2.0</version.activation>
         <version.java>1.8</version.java>
         <version.jaxb>2.3.0</version.jaxb>
-        <version.junitJupiter>5.2.0</version.junitJupiter>
-        <version.junitPlatform>1.2.0</version.junitPlatform>
-        <version.junitVintage>5.2.0</version.junitVintage>
-        <version.kotlin>1.2.60</version.kotlin>
-        <version.neo4j>3.4.5</version.neo4j>
-        <version.spring>5.0.8.RELEASE</version.spring>
-        <version.springBoot>2.0.4.RELEASE</version.springBoot>
+        <version.junitJupiter>5.3.1</version.junitJupiter>
+        <version.junitPlatform>1.3.1</version.junitPlatform>
+        <version.junitVintage>5.3.1</version.junitVintage>
+        <version.kotlin>1.2.70</version.kotlin>
+        <version.neo4j>3.4.7</version.neo4j>
+        <version.spring>5.0.9.RELEASE</version.spring>
+        <version.springBoot>2.0.5.RELEASE</version.springBoot>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -45,7 +45,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-kotlin</artifactId>
-                <version>2.9.6</version>
+                <version>2.9.7</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.activation</groupId>
@@ -70,7 +70,7 @@
             <dependency>
                 <groupId>io.mockk</groupId>
                 <artifactId>mockk</artifactId>
-                <version>1.8.6</version>
+                <version>1.8.7</version>
             </dependency>
             <dependency>
                 <groupId>javax.xml.bind</groupId>
@@ -231,7 +231,7 @@
                 <plugin>
                     <groupId>com.github.ekryd.sortpom</groupId>
                     <artifactId>sortpom-maven-plugin</artifactId>
-                    <version>2.8.0</version>
+                    <version>2.9.0</version>
                     <configuration>
                         <sortDependencies>scope,groupId,artifactId</sortDependencies>
                         <sortPlugins>groupId,artifactId</sortPlugins>
@@ -242,7 +242,7 @@
                 <plugin>
                     <groupId>com.spotify</groupId>
                     <artifactId>dockerfile-maven-plugin</artifactId>
-                    <version>1.4.3</version>
+                    <version>1.4.4</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
@@ -316,7 +316,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.5</version>
+                    <version>2.7</version>
                     <inherited>false</inherited>
                     <configuration>
                         <outputFile>outdated-dependencies.txt</outputFile>

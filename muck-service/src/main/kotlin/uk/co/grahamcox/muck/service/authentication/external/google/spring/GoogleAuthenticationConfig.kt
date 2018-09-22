@@ -22,8 +22,8 @@ class GoogleAuthenticationConfig(context: GenericApplicationContext) {
             bean("googleAuthenticationService") {
                 val authUri = URI(env["muck.authentication.google.authUri"])
                 val tokenUri = URI(env["muck.authentication.google.tokenUri"])
-                val clientId = env["muck.authentication.google.clientId"]
-                val clientSecret = env["muck.authentication.google.clientSecret"]
+                val clientId = env["muck.authentication.google.clientId"]!!
+                val clientSecret = env["muck.authentication.google.clientSecret"]!!
                 val redirectUri = URI(env["muck.authentication.google.redirectUri"])
 
                 AuthenticationServiceImpl(
