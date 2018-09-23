@@ -26,15 +26,15 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
+          - maven-dependencies-{{ checksum "pom.xml" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+          - maven-dependencies-
 
       - run: mvn clean install -B 
 
       - save_cache:
           paths:
             - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
+          key: maven-dependencies-{{ checksum "pom.xml" }}
         
 
