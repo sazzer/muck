@@ -193,6 +193,64 @@ class UpdateUserIT : AcceptanceTestBase() {
     }
 
     /**
+     * Test updating a user profile with invalid data
+     */
+    @Test
+    fun updateUserProfileInvalidData() {
+        val response = requester.put("/api/users/$USER_ID",
+                convertFromJson("""{
+                        "email": "",
+                        "displayName": "",
+                        "logins": [
+                            {
+                                "provider": "",
+                                "providerId": "",
+                                "displayName": ""
+                            }
+                        ]
+                    }"""))
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.statusCode) },
+                Executable { Assertions.assertEquals(MediaType.valueOf("application/problem+json"), response.headers.contentType) },
+
+                Executable { Assertions.assertEquals(convertFromJson("""{
+                    "type": "tag:grahamcox.co.uk,2018,problems/invalid-request",
+                    "title": "The incoming request was invalid",
+                    "status": 400,
+                    "violations": [
+                        {
+                            "field": "displayName",
+                            "title": "must not be blank",
+                            "type": "javax.validation.constraints.NotBlank",
+                            "value": ""
+                        }, {
+                            "field": "email",
+                            "title": "must not be blank",
+                            "type": "javax.validation.constraints.NotBlank",
+                            "value": ""
+                        }, {
+                            "field": "logins[].displayName",
+                            "title": "must not be blank",
+                            "type": "javax.validation.constraints.NotBlank",
+                            "value": ""
+                        }, {
+                            "field": "logins[].provider",
+                            "title": "must not be blank",
+                            "type": "javax.validation.constraints.NotBlank",
+                            "value": ""
+                        }, {
+                            "field": "logins[].providerId",
+                            "title": "must not be blank",
+                            "type": "javax.validation.constraints.NotBlank",
+                            "value": ""
+                        }
+                    ]
+                }"""), response.getValue("/body")) }
+        )
+    }
+
+    /**
      * Actually perform the request to update the user
      */
     private fun performUpdateRequest(): Response {

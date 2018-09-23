@@ -11,6 +11,7 @@ import uk.co.grahamcox.muck.service.authorization.spring.AuthorizationConfig
 import uk.co.grahamcox.muck.service.database.DatabaseConfig
 import uk.co.grahamcox.muck.service.home.spring.HomeConfig
 import uk.co.grahamcox.muck.service.rest.ProblemResponseBodyAdvice
+import uk.co.grahamcox.muck.service.rest.validation.ValidationControllerAdvice
 import uk.co.grahamcox.muck.service.user.spring.UserConfig
 import java.time.Clock
 
@@ -35,6 +36,7 @@ class MuckConfig(context: GenericApplicationContext) {
                 RestTemplate()
             }
             bean<ProblemResponseBodyAdvice>()
+            bean<ValidationControllerAdvice>()
         }.initialize(context)
     }
 }

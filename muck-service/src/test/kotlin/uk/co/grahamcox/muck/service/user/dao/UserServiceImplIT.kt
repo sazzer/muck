@@ -1,9 +1,11 @@
 package uk.co.grahamcox.muck.service.user.dao
 
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
 import org.springframework.beans.factory.annotation.Autowired
+import uk.co.grahamcox.muck.service.database.Neo4jOperations
 import uk.co.grahamcox.muck.service.database.OptimisticLockException
 import uk.co.grahamcox.muck.service.database.ResourceNotFoundException
 import uk.co.grahamcox.muck.service.model.Identity
@@ -11,6 +13,7 @@ import uk.co.grahamcox.muck.service.spring.SpringTestBase
 import uk.co.grahamcox.muck.service.user.UserData
 import uk.co.grahamcox.muck.service.user.UserId
 import uk.co.grahamcox.muck.service.user.UserLogin
+import java.time.Clock
 import java.time.Instant
 import java.util.*
 
@@ -18,9 +21,24 @@ import java.util.*
  * Integration test for the UserService
  */
 internal class UserServiceImplIT : SpringTestBase() {
-    /** The test subject */
+    /** The database connection */
     @Autowired
+    private lateinit var neo4jOperations: Neo4jOperations
+
+    /** The clock */
+    @Autowired
+    private lateinit var clock: Clock
+
+    /** The test subject */
     private lateinit var userServiceImpl: UserServiceImpl
+
+    /**
+     * Set up the test subject
+     */
+    @BeforeEach
+    fun setup() {
+        userServiceImpl = UserServiceImpl(neo4jOperations, clock)
+    }
 
     /**
      * Test getting an unknown user by ID
