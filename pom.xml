@@ -243,6 +243,13 @@
                     <groupId>com.spotify</groupId>
                     <artifactId>dockerfile-maven-plugin</artifactId>
                     <version>1.4.4</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.sun.activation</groupId>
+                            <artifactId>javax.activation</artifactId>
+                            <version>${version.activation}</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
