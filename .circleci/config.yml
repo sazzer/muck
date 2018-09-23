@@ -30,7 +30,17 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - maven-dependencies-
 
-      - run: mvn clean install -B 
+      - setup_remote_docker
+
+      - run: 
+          name: "Build and test project"
+          command: |
+              mvn clean install -B
+
+      - run:
+          name: "Build and run E2E Tests"
+          command: |
+              mvn install -DskipTests -Pdocker
 
       - save_cache:
           paths:
