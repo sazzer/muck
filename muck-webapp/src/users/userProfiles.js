@@ -151,7 +151,7 @@ export function* loadUserProfileSaga(action: LoadUserProfileAction): Generator<a
 /**
  * Saga for updating the user profile on the server
  */
-export function* updateUserProfileSaga(action: UpdateUserProfileAction): Generator<any, any, any> {
+export function updateUserProfileSaga(action: UpdateUserProfileAction) {
     action.payload.callback(null);
 }
 
