@@ -148,8 +148,11 @@ describe('loadResource', () => {
             it('Can not get an unknown named link', () => {
                 expect(resource.getLink('other', 'unknown')).toBeUndefined();
             });
-            it('Can not get an unnamed link', () => {
-                expect(resource.getLink('other')).toBeUndefined();
+            it('Gets the first link when no name provided', () => {
+                expect(resource.getLink('other')).toEqual({
+                    name: 'a1',
+                    href: '/first'
+                });
             });
         });
     });

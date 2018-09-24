@@ -63,7 +63,7 @@ export function loadResource(url: string, params: LoadResourceParams = {}): Prom
             getLinks: (rel: string) => responseLinks[rel] || [],
             getLink: (rel: string, name?: string): ?Link => {
                 const links = responseLinks[rel] || [];
-                return links.find((link) => link.name === name);
+                return links.find((link) => (link.name === name) || (name === undefined));
             }
         };
     });

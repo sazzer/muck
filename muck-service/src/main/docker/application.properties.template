@@ -1,0 +1,12 @@
+server.port=$PORT
+
+spring.profiles.active=prod
+
+neo4j.address=$NEO4J_URI
+
+muck.authentication.google.enabled=$MUCK_GOOGLE_ENABLED
+muck.authentication.google.authUri=$MUCK_GOOGLE_AUTH_URI
+muck.authentication.google.tokenUri=$MUCK_GOOGLE_TOKEN_URI
+muck.authentication.google.redirectUri=$MUCK_GOOGLE_REDIRECT_URI
+muck.authentication.google.clientId=$MUCK_GOOGLE_CLIENT_ID
+muck.authentication.google.clientSecret=$MUCK_GOOGLE_CLIENT_SECRET

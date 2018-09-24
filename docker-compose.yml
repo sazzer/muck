@@ -8,15 +8,30 @@ services:
         ports:
             - "127.0.0.1:7474:7474"
             - "127.0.0.1:7687:7687"
+    muck-fakeauth:
+        image: sazzer/fakeauth
+        ports:
+            - "127.0.0.1:3000:3000"
     muck-service:
         image: muck/service:0.0.1-SNAPSHOT
         links:
             - muck-neo4j:neo4j
+            - muck-fakeauth:fakeauth
         ports:
             - "127.0.0.1:8080:8080"
         environment:
             - NEO4J_URI=bolt://neo4j:7687
+            - MUCK_GOOGLE_ENABLED=true
+            - MUCK_GOOGLE_AUTH_URI=http://localhost:3000/google/o/oauth2/v2/auth
+            - MUCK_GOOGLE_TOKEN_URI=http://fakeauth:3000/google/oauth2/v4/token
+            - MUCK_GOOGLE_REDIRECT_URI=http://localhost:8080/api/authentication/external/google/callback
+            - MUCK_GOOGLE_CLIENT_ID=googleClientId
+            - MUCK_GOOGLE_CLIENT_SECRET=googleClientSecret
     muck-webapp:
         image: muck/webapp:0.0.1-SNAPSHOT
+        links:
+            - muck-fakeauth:fakeauth
         ports: 
             - "127.0.0.1:8000:80"
+        environment:
+            - MUCK_SERVICE_API_URI=http://localhost:8080/api
