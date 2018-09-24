@@ -10,13 +10,14 @@ import UserProfileData from "./UserProfileData";
 import UserProfileAccounts from './UserProfileAccounts';
 import type {UsersModule} from "../../users";
 import {module as usersModule} from "../../users";
+import type {Errors} from "../../errors";
 
 /**
  * The props for the User Profile Screen
  */
 type UserProfileScreenProps = {
     user: UserProfile,
-    updateUserProfile: (UserData, Array<UserLogin>, (string | null) => void) => void
+    updateUserProfile: (UserData, Array<UserLogin>, (Errors | null) => void) => void
 };
 
 /**
@@ -57,7 +58,7 @@ export class UserProfileScreen extends React.Component<UserProfileScreenProps> {
      * @param callback The callback for when the update has finished
      * @private
      */
-    _updateUserData = (data: UserData, callback: (string | null) => void) => {
+    _updateUserData = (data: UserData, callback: (Errors | null) => void) => {
         this.props.updateUserProfile(
             data,
             this.props.user.logins,
@@ -71,8 +72,12 @@ export class UserProfileScreen extends React.Component<UserProfileScreenProps> {
 function ConnectedUserProfileScreen({users}: {users: UsersModule}) {
     const currentUserId = users.selectCurrentUserId();
     const currentUser = currentUserId && users.selectUserById(currentUserId);
-    if (currentUser) {
-        return <UserProfileScreen user={currentUser} updateUserProfile={users.updateUserProfile} />
+    if (currentUserId && currentUser) {
+        const updateUserProfileHandler = function (userData: UserData, logins: Array<UserLogin>, callback: (Errors | null) => void) {
+            return users.updateUserProfile(currentUserId, userData, logins, callback);
+        };
+
+        return <UserProfileScreen user={currentUser} updateUserProfile={updateUserProfileHandler} />
     } else {
         return null;
     }

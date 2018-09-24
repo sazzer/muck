@@ -2,7 +2,8 @@
 
 /** The type to represent a user */
 import {call, put} from 'redux-saga/effects';
-import {loadResource} from "../api";
+import {loadResource, putResource} from "../api";
+import type {Errors} from '../errors';
 
 /**
  * Type representing the details of a login with a provider
@@ -62,9 +63,10 @@ export type StoreUserProfileAction = {
 export type UpdateUserProfileAction = {
     type: string,
     payload: {
+        userId: string,
         data: UserData,
         logins: Array<UserLogin>,
-        callback: (string | null) => void
+        callback: (Errors | null) => void
     }
 };
 
@@ -105,14 +107,16 @@ export function storeUserProfile(user: UserProfile) : StoreUserProfileAction {
 
 /**
  * Construct the action for updating a user on the server
+ * @param userId The ID of the user
  * @param userData the user data to save
  * @param logins the user logins to save
  * @param callback optional callback to trigger after the update
  */
-export function updateUserProfile(userData: UserData, logins: Array<UserLogin>, callback: (string | null) => void) : UpdateUserProfileAction {
+export function updateUserProfile(userId: string, userData: UserData, logins: Array<UserLogin>, callback: (Errors | null) => void) : UpdateUserProfileAction {
     return {
         type: UPDATE_USER_PROFILE_ACTION,
         payload: {
+            userId,
             data: userData,
             logins,
             callback
@@ -151,8 +155,42 @@ export function* loadUserProfileSaga(action: LoadUserProfileAction): Generator<a
 /**
  * Saga for updating the user profile on the server
  */
-export function updateUserProfileSaga(action: UpdateUserProfileAction) {
-    action.payload.callback(null);
+export function* updateUserProfileSaga(action: UpdateUserProfileAction): Generator<*, *, *> {
+    try {
+        const savedUser = yield call(putResource, action.payload.userId, {
+            resource: {
+                email: action.payload.data.email,
+                displayName: action.payload.data.displayName,
+                logins: action.payload.logins
+            }
+        });
+
+        const userProfile: UserProfile = {
+            links: {
+                self: savedUser.getLink('self').href
+            },
+            data: {
+                email: savedUser.data.email,
+                displayName: savedUser.data.displayName,
+            },
+            logins: savedUser.data.logins
+        };
+        yield put(storeUserProfile(userProfile));
+
+        action.payload.callback(null);
+    } catch (e) {
+        const errors = {
+            error: e.response.data.type,
+            fieldErrors: e.response.data.violations.map((violation) => (
+                {
+                    field: violation.field,
+                    error: violation.type
+                }
+            ))
+        };
+
+        action.payload.callback(errors);
+    }
 }
 
 /**
@@ -186,7 +224,7 @@ export const module = {
 
 /** The shape of this sub-module */
 export type UserProfilesModule = {
-    updateUserProfile: (UserData, Array<UserLogin>, (string | null) => void) => void,
+    updateUserProfile: (string, UserData, Array<UserLogin>, (Errors | null) => void) => void,
 
     selectUserById: (string) => ?UserProfile
 };

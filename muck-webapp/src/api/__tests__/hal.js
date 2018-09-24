@@ -157,3 +157,32 @@ describe('loadResource', () => {
         });
     });
 });
+describe('putResource', () => {
+    describe('With no links', () => {
+        let resource;
+        beforeEach(async () => {
+            mockAxios.onPut('http://example.com:8080/api/a/b', {name: 'John Smith'}).reply(200, {
+                users: [
+                    { id: 1, name: 'John Smith' }
+                ]
+            });
+
+            resource = await testSubject.putResource('/a/b', {
+                resource: {
+                    'name': 'John Smith'
+                }
+            });
+        });
+
+        it('Has the correct data', () => {
+            expect(resource.data).toEqual({
+                users: [
+                    { id: 1, name: 'John Smith' }
+                ]
+            });
+        });
+        it('Has the correct links', () => {
+            expect(resource.links).toEqual({});
+        });
+    });
+});

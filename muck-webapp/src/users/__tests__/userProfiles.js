@@ -35,6 +35,22 @@ describe('storeUserProfile', () => {
     })
 });
 
+describe('updateUserProfile', () => {
+    it('Produces the correct action', () => {
+        const callback = () => {};
+
+        expect(testSubject.updateUserProfile('someUserId', user.data, user.logins, callback)).toEqual({
+            type: 'USERS/UPDATE_USER_PROFILE_ACTION',
+            payload: {
+                userId: 'someUserId',
+                data: user.data,
+                logins: user.logins,
+                callback
+            }
+        })
+    })
+});
+
 describe('storeUserProfileMutation', () => {
     it('Correctly updates the state', () => {
         const state = {

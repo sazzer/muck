@@ -4,6 +4,7 @@ import React from 'react';
 import {Button, Form, Icon, Message} from 'semantic-ui-react'
 import {I18n, Interpolate} from 'react-i18next';
 import type {UserData} from "../../users/userProfiles";
+import type {Errors} from "../../errors";
 
 /**
  * The props for the User Profile Data area
@@ -11,7 +12,7 @@ import type {UserData} from "../../users/userProfiles";
 type UserProfileDataProps = {
     user: UserData,
 
-    onUpdate: (UserData, (string | null) => void) => void
+    onUpdate: (UserData, (Errors | null) => void) => void
 };
 
 /**
@@ -21,7 +22,8 @@ type UserProfileDataState = {
     displayName: string,
     email: string,
     formState: Symbol,
-    formResult?: Symbol
+    formResult?: Symbol,
+    fieldsInError?: { [string] : boolean }
 };
 
 /** The form is in the initial state */
@@ -69,6 +71,8 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
      * Actually render the component
      */
     render() {
+        const fieldsInError = this.state.fieldsInError || {};
+
         return (
             <I18n>
                 {
@@ -77,7 +81,7 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
                               success={this.state.formResult === FORM_RESULT_SUCCESS}
                               error={this.state.formResult === FORM_RESULT_ERROR}
                               onSubmit={this._handleSubmit}>
-                            <Form.Field required error={this.state.displayName === '' && this.state.formResult === FORM_RESULT_ERROR}>
+                            <Form.Field required error={fieldsInError.displayName && this.state.formResult === FORM_RESULT_ERROR}>
                                 <label>
                                     <Interpolate i18nKey="userProfile.data.displayName.label" />
                                 </label>
@@ -86,7 +90,7 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
                                        onChange={this._handleChangeDisplayName}
                                        autoFocus />
                             </Form.Field>
-                            <Form.Field required error={this.state.email === '' && this.state.formResult === FORM_RESULT_ERROR}>
+                            <Form.Field required error={fieldsInError.email && this.state.formResult === FORM_RESULT_ERROR}>
                                 <label>
                                     <Interpolate i18nKey="userProfile.data.email.label" />
                                 </label>
@@ -145,7 +149,11 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
         if (this.state.formState === FORM_STATE_EDITED) {
             if (this.state.email === '' || this.state.displayName === '') {
                 this.setState({
-                    formResult: FORM_RESULT_ERROR
+                    formResult: FORM_RESULT_ERROR,
+                    fieldsInError: {
+                        displayName: this.state.displayName === '',
+                        email: this.state.email === ''
+                    }
                 });
             } else {
                 this.setState({
@@ -159,9 +167,16 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
 
                 this.props.onUpdate(user, (err) => {
                     if (err) {
+                        console.log(err);
+                        const fieldErrors: { [string] : boolean } = {};
+                        if (err.fieldErrors) {
+                            err.fieldErrors.forEach(field => fieldErrors[field.field] = true);
+                        }
+
                         this.setState({
                             formState: FORM_STATE_EDITED,
-                            formResult: FORM_RESULT_ERROR
+                            formResult: FORM_RESULT_ERROR,
+                            fieldsInError: fieldErrors
                         });
                     } else {
                         this.setState({
