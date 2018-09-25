@@ -23,14 +23,18 @@ type SocialLoginsProps = {
  */
 export function SocialLogins({buttons, startAuthenticationAction}: SocialLoginsProps) {
     const buttonMarkup = buttons.map(button => (
-        <Button color={BUTTON_COLOURS[button]} fluid key={button} onClick={() => startAuthenticationAction(button)}>
+        <Button color={BUTTON_COLOURS[button]}
+                fluid
+                key={button}
+                data-test={`social-login-button-${button}`}
+                onClick={() => startAuthenticationAction(button)}>
             <Icon name={button} />
             <Interpolate i18nKey={`page.landing.login.socialLogins.${button}`} />
         </Button>
     ));
 
     return (
-        <Button.Group vertical>
+        <Button.Group vertical data-test="social-login-buttons">
             { buttonMarkup }
         </Button.Group>
     );

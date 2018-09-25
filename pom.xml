@@ -34,6 +34,7 @@
         <version.junitVintage>5.3.1</version.junitVintage>
         <version.kotlin>1.2.70</version.kotlin>
         <version.neo4j>3.4.7</version.neo4j>
+        <version.selenium>3.14.0</version.selenium>
         <version.slf4j>1.7.25</version.slf4j>
         <version.spring>5.0.9.RELEASE</version.spring>
         <version.springBoot>2.0.5.RELEASE</version.springBoot>
@@ -107,6 +108,17 @@
                 <type>pom</type>
             </dependency>
             <dependency>
+                <groupId>org.gebish</groupId>
+                <artifactId>geb-spock</artifactId>
+                <version>2.2</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>groovy-all</artifactId>
+                        <groupId>org.codehaus.groovy</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-reflect</artifactId>
                 <version>${version.kotlin}</version>
@@ -145,6 +157,26 @@
                 <groupId>org.neo4j.driver</groupId>
                 <artifactId>neo4j-java-driver</artifactId>
                 <version>1.4.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-chrome-driver</artifactId>
+                <version>${version.selenium}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-firefox-driver</artifactId>
+                <version>${version.selenium}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-java</artifactId>
+                <version>${version.selenium}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-support</artifactId>
+                <version>${version.selenium}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

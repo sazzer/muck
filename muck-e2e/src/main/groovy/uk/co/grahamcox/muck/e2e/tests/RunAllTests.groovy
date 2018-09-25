@@ -1,11 +1,18 @@
-package uk.co.grahamcox.muck.e2e
+package uk.co.grahamcox.muck.e2e.tests
 
 import io.github.classgraph.ClassGraph
 import org.junit.internal.TextListener
 import org.junit.runner.JUnitCore
 import org.junit.runner.Request
 
+/**
+ * Wrapper to run all of the tests
+ */
 class RunAllTests {
+    /**
+     * Actually run all of the tests
+     * @param args command line arguments. Ignored.
+     */
     static void main(String... args) {
 
         def testClasses = new ClassGraph()
