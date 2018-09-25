@@ -16,7 +16,7 @@ class RunAllTests {
     static void main(String... args) {
 
         def testClasses = new ClassGraph()
-                .whitelistPackages(RunAllTests.class.packageName)
+                .whitelistPackages(RunAllTests.class.package.name)
                 .scan()
                 .allClasses
                 .filter { it.name.endsWith("Spec") }
