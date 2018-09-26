@@ -321,6 +321,9 @@
                             <version>${version.activation}</version>
                         </dependency>
                     </dependencies>
+                    <configuration>
+                        <pullNewerImage>false</pullNewerImage>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
