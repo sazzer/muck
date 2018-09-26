@@ -37,14 +37,13 @@ jobs:
           command: |
               mvn clean install -B
 
-      - run:
-          name: "Build and run E2E Tests"
-          command: |
-              mvn install -DskipTests -Pdocker
-
       - save_cache:
           paths:
             - ~/.m2
           key: maven-dependencies-{{ checksum "pom.xml" }}
-        
 
+      - run:
+          name: "Build and run E2E Tests"
+          command: |
+              mvn install -DskipTests -Pdocker
+              docker-compose -f docker-compose-e2e.yml up --exit-code-from=muck-e2e --force-recreate
