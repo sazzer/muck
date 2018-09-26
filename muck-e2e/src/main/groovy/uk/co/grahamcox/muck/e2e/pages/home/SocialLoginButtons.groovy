@@ -13,6 +13,8 @@ class SocialLoginButtons extends Module {
     static content = {
         /** The actual buttons */
         buttons { $("button") }
+
+        button { id -> $("button[data-test='social-login-button-$id']")}
     }
 
     /**
@@ -20,10 +22,7 @@ class SocialLoginButtons extends Module {
      * @return the list of configured providers
      */
     def getProviders() {
-        Awaitility.waitAtMost(1, TimeUnit.SECONDS)
-            .pollDelay(100, TimeUnit.MILLISECONDS)
-            .ignoreException(RequiredPageContentNotPresent)
-            .until { !buttons.toList().isEmpty() }
+        waitForButtons()
 
         return buttons.toList()
             .findAll { it.attr("data-test") != null }
@@ -31,5 +30,25 @@ class SocialLoginButtons extends Module {
             .findAll { it.startsWith("social-login-button-") }
             .collect { it.substring("social-login-buttons".length()) }
             .sort()
+    }
+
+    /**
+     * Log in with the given provider
+     * @param provider the ID of the provider
+     */
+    def loginWith(provider) {
+        waitForButtons()
+
+        button(provider).click()
+    }
+
+    /**
+     * Wait for the social login buttons to be rendered
+     */
+    private waitForButtons() {
+        Awaitility.waitAtMost(1, TimeUnit.SECONDS)
+                .pollDelay(100, TimeUnit.MILLISECONDS)
+                .ignoreException(RequiredPageContentNotPresent)
+                .until { !buttons.toList().isEmpty() }
     }
 }

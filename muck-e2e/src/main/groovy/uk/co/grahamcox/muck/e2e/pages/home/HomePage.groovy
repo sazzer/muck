@@ -1,11 +1,11 @@
 package uk.co.grahamcox.muck.e2e.pages.home
 
-import geb.Page
+import uk.co.grahamcox.muck.e2e.pages.BasePage
 
 /**
  * Page model for the home page of the application
  */
-class HomePage extends Page {
+class HomePage extends BasePage {
     /** The URL to go to */
     static url = "/"
 
