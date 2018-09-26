@@ -1,6 +1,8 @@
 package uk.co.grahamcox.muck.e2e.pages.home
 
 import geb.Module
+import geb.error.RequiredPageContentNotPresent
+import org.awaitility.Awaitility
 
 import java.util.concurrent.TimeUnit
 
@@ -18,8 +20,11 @@ class SocialLoginButtons extends Module {
      * @return the list of configured providers
      */
     def getProviders() {
-        // TODO: Actually wait for the buttons to be rendered
-        TimeUnit.SECONDS.sleep(2)
+        Awaitility.waitAtMost(1, TimeUnit.SECONDS)
+            .pollDelay(100, TimeUnit.MILLISECONDS)
+            .ignoreException(RequiredPageContentNotPresent)
+            .until { !buttons.toList().isEmpty() }
+
         return buttons.toList()
             .findAll { it.attr("data-test") != null }
             .collect { it.attr("data-test") }
