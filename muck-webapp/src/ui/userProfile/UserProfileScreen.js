@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {Container, Tab} from 'semantic-ui-react';
-import {I18n} from 'react-i18next';
+import {I18n, Interpolate} from 'react-i18next';
 import {connectStore} from "redux-box";
 import type {UserData, UserLogin, UserProfile} from "../../users/userProfiles";
 import UserProfileHeader from "./UserProfileHeader";
@@ -41,7 +41,7 @@ export class UserProfileScreen extends React.Component<UserProfileScreenProps> {
                         ];
 
                         return (
-                            <Container>
+                            <Container data-test='user-profile-page'>
                                 <UserProfileHeader user={this.props.user} />
                                 <Tab menu={{fluid: true, vertical: true, tabular: true}} panes={panes} />
                             </Container>

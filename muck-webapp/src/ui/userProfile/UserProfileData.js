@@ -77,7 +77,8 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
             <I18n>
                 {
                     (t) => (
-                        <Form loading={this.state.formState === FORM_STATE_SAVING}
+                        <Form data-test='user-profile-data'
+                              loading={this.state.formState === FORM_STATE_SAVING}
                               success={this.state.formResult === FORM_RESULT_SUCCESS}
                               error={this.state.formResult === FORM_RESULT_ERROR}
                               onSubmit={this._handleSubmit}>
@@ -86,6 +87,7 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
                                     <Interpolate i18nKey="userProfile.data.displayName.label" />
                                 </label>
                                 <input placeholder={t('userProfile.data.displayName.placeholder')}
+                                       name='displayName'
                                        value={this.state.displayName}
                                        onChange={this._handleChangeDisplayName}
                                        autoFocus />
@@ -95,6 +97,7 @@ export default class UserProfileData extends React.Component<UserProfileDataProp
                                     <Interpolate i18nKey="userProfile.data.email.label" />
                                 </label>
                                 <input placeholder={t('userProfile.data.email.placeholder')}
+                                       name='email'
                                        value={this.state.email}
                                        onChange={this._handleChangeEmail} />
                             </Form.Field>
