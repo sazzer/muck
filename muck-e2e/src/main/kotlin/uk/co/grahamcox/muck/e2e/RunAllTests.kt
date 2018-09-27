@@ -10,6 +10,7 @@ fun main(args: Array<String>) {
             "-t", "not @wip",
             "-t", "not @ignore",
             "-t", "not @manual",
+            "-g", "classpath:uk/co/grahamcox/muck/e2e",
             "classpath:uk/co/grahamcox/muck/e2e"
     ))
 }
