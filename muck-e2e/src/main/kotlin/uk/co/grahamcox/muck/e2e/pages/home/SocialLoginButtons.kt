@@ -1,9 +1,8 @@
 package uk.co.grahamcox.muck.e2e.pages.home
 
-import org.awaitility.Awaitility
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
-import java.util.concurrent.TimeUnit
+import uk.co.grahamcox.muck.e2e.browser.findElementsWhenPresent
 
 /**
  * The page model for the Social Login Buttons
@@ -20,15 +19,7 @@ class SocialLoginButtons(private val pageBase: WebElement) {
 
     private val socialLoginButtons: List<WebElement>
         get() {
-            Awaitility.await()
-                    .atMost(1, TimeUnit.SECONDS)
-                    .pollInterval(100, TimeUnit.MILLISECONDS)
-                    .until {
-                        val buttons = pageBase.findElements(By.cssSelector("button"))
-                        buttons.isNotEmpty()
-                    }
-
-            return pageBase.findElements(By.cssSelector("button[data-test]"))
+            return pageBase.findElementsWhenPresent(By.cssSelector("button[data-test]"))
         }
 
     /**

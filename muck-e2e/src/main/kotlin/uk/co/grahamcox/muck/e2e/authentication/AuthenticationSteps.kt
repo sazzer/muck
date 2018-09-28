@@ -21,6 +21,12 @@ class AuthenticationSteps {
         homePage.socialLoginButtons.authenticateAs(provider)
     }
 
+    @Then("""^I am logged in as "(.+)"$""")
+    fun checkLoggedIn(user: String) {
+        val homePage: HomePage = browser.getPage(::HomePage)
+        Assert.assertEquals(user, homePage.headerBar.userMenu.currentUserName)
+    }
+
     /**
      * Check the supported authentication providers
      */
