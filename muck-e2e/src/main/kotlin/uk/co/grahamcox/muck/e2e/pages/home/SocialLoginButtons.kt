@@ -10,9 +10,15 @@ import java.util.concurrent.TimeUnit
  */
 class SocialLoginButtons(private val pageBase: WebElement) {
     /**
-     * Get the names of the social login buttons
+     * Authenticate using the specified authentication provider
      */
-    val socialLoginButtonNames: List<String>
+    fun authenticateAs(provider: String) {
+        val button = socialLoginButtons.find { it.getAttribute("data-test") == "social-login-button-$provider" }
+            ?: throw IllegalArgumentException("Social login button $provider not found")
+        button.click()
+    }
+
+    private val socialLoginButtons: List<WebElement>
         get() {
             Awaitility.await()
                     .atMost(1, TimeUnit.SECONDS)
@@ -22,7 +28,15 @@ class SocialLoginButtons(private val pageBase: WebElement) {
                         buttons.isNotEmpty()
                     }
 
-            return pageBase.findElements(By.cssSelector("button"))
+            return pageBase.findElements(By.cssSelector("button[data-test]"))
+        }
+
+    /**
+     * Get the names of the social login buttons
+     */
+    val socialLoginButtonNames: List<String>
+        get() {
+            return socialLoginButtons
                     .mapNotNull { it.getAttribute("data-test") }
                     .filter { it.startsWith("social-login-button-") }
                     .map { it.removePrefix("social-login-button-") }

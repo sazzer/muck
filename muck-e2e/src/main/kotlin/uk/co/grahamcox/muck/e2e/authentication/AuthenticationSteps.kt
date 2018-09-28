@@ -1,6 +1,7 @@
 package uk.co.grahamcox.muck.e2e.authentication
 
 import cucumber.api.java.en.Then
+import cucumber.api.java.en.When
 import org.junit.Assert
 import org.springframework.beans.factory.annotation.Autowired
 import uk.co.grahamcox.muck.e2e.browser.Browser
@@ -13,6 +14,12 @@ class AuthenticationSteps {
     /** The browser */
     @Autowired
     private lateinit var browser: Browser
+
+    @When("""^I authenticate with "(.+)"$""")
+    fun authenticateAs(provider: String) {
+        val homePage: HomePage = browser.getPage(::HomePage)
+        homePage.socialLoginButtons.authenticateAs(provider)
+    }
 
     /**
      * Check the supported authentication providers
