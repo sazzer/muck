@@ -1,11 +1,11 @@
 package uk.co.grahamcox.muck.e2e.browser
 
+import org.openqa.selenium.By
 import org.openqa.selenium.OutputType
-import org.openqa.selenium.WebDriver
+import org.openqa.selenium.WebElement
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.DisposableBean
-import org.springframework.beans.factory.InitializingBean
 import org.springframework.web.util.UriComponentsBuilder
 
 /**
@@ -13,23 +13,17 @@ import org.springframework.web.util.UriComponentsBuilder
  */
 class Browser(
         private val webdriver: RemoteWebDriver,
-        private val baseUrl: String) : InitializingBean, DisposableBean {
+        private val baseUrl: String) : DisposableBean {
     companion object {
         /** The logger to use */
         private val LOG = LoggerFactory.getLogger(Browser::class.java)
     }
 
     /**
-     * Open up the browser onto the home page
-     */
-    override fun afterPropertiesSet() {
-        openUrl("/")
-    }
-
-    /**
      * Destroy the browser when we've finished with it
      */
     override fun destroy() {
+        LOG.debug("Shutting down browser")
         webdriver.quit()
     }
 
@@ -61,5 +55,13 @@ class Browser(
 
         LOG.debug("Opening URL {}", target)
         webdriver.get(target)
+    }
+
+    /**
+     * Get the page model for the current browser page
+     */
+    fun <P : Page> getPage(builder: (pageBase: WebElement) -> P): P {
+        val page = builder(webdriver.findElement(By.id("root")))
+        return page
     }
 }
