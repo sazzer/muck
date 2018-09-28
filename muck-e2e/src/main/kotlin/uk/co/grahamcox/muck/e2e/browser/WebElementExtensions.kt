@@ -2,6 +2,7 @@ package uk.co.grahamcox.muck.e2e.browser
 
 import org.awaitility.Awaitility
 import org.openqa.selenium.By
+import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.WebElement
 import java.util.concurrent.TimeUnit
 
@@ -9,9 +10,7 @@ import java.util.concurrent.TimeUnit
  * Wait until a selector returns that something is present
  */
 fun WebElement.waitUntilPresent(selector: By): WebElement {
-    Awaitility.await()
-            .atMost(1, TimeUnit.SECONDS)
-            .pollInterval(100, TimeUnit.MILLISECONDS)
+    await()
             .until {
                 this.findElements(selector).isNotEmpty()
             }
@@ -22,14 +21,20 @@ fun WebElement.waitUntilPresent(selector: By): WebElement {
  * Wait until this element is present
  */
 fun WebElement.waitUntilVisible(): WebElement {
-    Awaitility.await()
-            .atMost(1, TimeUnit.SECONDS)
-            .pollInterval(100, TimeUnit.MILLISECONDS)
+    await()
             .until {
                 this.isDisplayed
             }
     return this
 }
+
+/**
+ * Build the standard Awaitility setup for waiting for elements
+ */
+private fun await() = Awaitility.await()
+        .atMost(5, TimeUnit.SECONDS)
+        .pollInterval(100, TimeUnit.MILLISECONDS)
+        .ignoreException(NoSuchElementException::class.java)
 
 /**
  * Find some elements, waiting until they are present first
