@@ -2,6 +2,7 @@ package uk.co.grahamcox.muck.e2e.browser
 
 import org.awaitility.Awaitility
 import org.openqa.selenium.By
+import org.openqa.selenium.Keys
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.WebElement
 import java.util.concurrent.TimeUnit
@@ -42,4 +43,14 @@ private fun await() = Awaitility.await()
 fun WebElement.findElementsWhenPresent(selector: By): List<WebElement> {
     waitUntilPresent(selector)
     return findElements(selector)
+}
+
+/**
+ * Helper to select the contents of an input element, delete it and type over it
+ */
+fun WebElement.overType(value: String) {
+    while (this.getAttribute("value") != "") {
+        this.sendKeys(Keys.BACK_SPACE)
+    }
+    this.sendKeys(value)
 }

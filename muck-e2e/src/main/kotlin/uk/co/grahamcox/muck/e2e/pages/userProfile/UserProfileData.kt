@@ -4,6 +4,7 @@ import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.FindBy
 import org.openqa.selenium.support.PageFactory
 import org.openqa.selenium.support.pagefactory.DefaultElementLocatorFactory
+import uk.co.grahamcox.muck.e2e.browser.overType
 import uk.co.grahamcox.muck.e2e.browser.waitUntilVisible
 import uk.co.grahamcox.muck.e2e.pages.PageBase
 
@@ -31,16 +32,19 @@ class UserProfileData(pageBase: WebElement) : PageBase() {
     @FindBy(css = "div.success.message")
     private lateinit var successElement: WebElement
 
+    /** Element for the error message */
+    @FindBy(css = "div.error.message")
+    private lateinit var errorElement: WebElement
+
     /** The display name */
     var displayName: String
         get() {
             displayNameElement.waitUntilVisible()
             return displayNameElement.getAttribute("value")
         }
-        set(value: String) {
+        set(value) {
             displayNameElement.waitUntilVisible()
-            displayNameElement.clear()
-            displayNameElement.sendKeys(value)
+            displayNameElement.overType(value)
         }
 
     /** The email address */
@@ -49,10 +53,9 @@ class UserProfileData(pageBase: WebElement) : PageBase() {
             emailElement.waitUntilVisible()
             return emailElement.getAttribute("value")
         }
-        set(value: String) {
+        set(value) {
             emailElement.waitUntilVisible()
-            emailElement.clear()
-            emailElement.sendKeys(value)
+            emailElement.overType(value)
         }
 
     /** Whether the form is a success or not */
@@ -60,6 +63,17 @@ class UserProfileData(pageBase: WebElement) : PageBase() {
         get() {
             return try {
                 successElement.waitUntilVisible()
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
+
+    /** Whether the form is a failure or not */
+    val failed: Boolean
+        get() {
+            return try {
+                errorElement.waitUntilVisible()
                 true
             } catch (e: Exception) {
                 false

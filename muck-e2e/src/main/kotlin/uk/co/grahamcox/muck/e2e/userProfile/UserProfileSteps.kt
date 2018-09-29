@@ -57,4 +57,12 @@ class UserProfileSteps {
 
         Assert.assertTrue("Save Success message was not displayed", userProfileDetails.success)
     }
+
+    @Then("^the user profile update failed$")
+    fun checkUserProfileSaveFailed() {
+        val userProfile = browser.getPage(::UserProfilePage)
+        val userProfileDetails = userProfile.userProfileData
+
+        Assert.assertTrue("Save Error message was not displayed", userProfileDetails.failed)
+    }
 }

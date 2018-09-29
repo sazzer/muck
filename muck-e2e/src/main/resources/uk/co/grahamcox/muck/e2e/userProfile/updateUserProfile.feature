@@ -21,3 +21,16 @@ Feature: Updating the User Profile
       | New User  | test@example.com | Change name  |
       | Test User | new@user.com     | Change email |
       | New User  | new@user.com     | Change both  |
+
+  Scenario Outline: Failing to update the user profile: <Comment>
+
+    When I update the user profile with details:
+      | Name          | <New Name>  |
+      | Email Address | <New Email> |
+    Then the user profile update failed
+
+    Examples:
+      | New Name  | New Email        | Error | Comment                |
+      |           | test@example.com | Error | Missing Name           |
+      | Test User |                  | Error | Missing Email          |
+      |           |                  | Error | Missing Name and Email |
