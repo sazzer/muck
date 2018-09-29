@@ -1,12 +1,7 @@
-package uk.co.grahamcox.muck.e2e.matcher
+package uk.co.grahamcox.muck.e2e.beans
 
 import org.junit.Assert
 import kotlin.reflect.KProperty1
-
-/** Details of a single field to match */
-data class BeanField<T>(
-        val getter: KProperty1<T, *>
-)
 
 /**
  * Matcher to compare the given bean to the expected input values
@@ -14,6 +9,11 @@ data class BeanField<T>(
 class BeanMatcher<T>(
         val fields: Map<String, BeanField<T>>
 ) {
+    /** Details of a single field to match */
+    data class BeanField<T>(
+            val getter: KProperty1<T, *>
+    )
+
     /**
      * Match the given bean to the expected input values
      * @param bean The bean to compare

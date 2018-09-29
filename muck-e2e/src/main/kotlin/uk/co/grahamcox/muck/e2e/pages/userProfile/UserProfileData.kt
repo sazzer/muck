@@ -23,17 +23,53 @@ class UserProfileData(pageBase: WebElement) : PageBase() {
     @FindBy(css = "input[name='email']")
     private lateinit var emailElement: WebElement
 
+    /** Element for the save button */
+    @FindBy(css = "button.primary[type='submit']")
+    private lateinit var saveElement: WebElement
+
+    /** Element for the success message */
+    @FindBy(css = "div.success.message")
+    private lateinit var successElement: WebElement
+
     /** The display name */
-    val displayName: String
+    var displayName: String
         get() {
             displayNameElement.waitUntilVisible()
             return displayNameElement.getAttribute("value")
         }
+        set(value: String) {
+            displayNameElement.waitUntilVisible()
+            displayNameElement.clear()
+            displayNameElement.sendKeys(value)
+        }
 
     /** The email address */
-    val email: String
+    var email: String
         get() {
             emailElement.waitUntilVisible()
             return emailElement.getAttribute("value")
         }
+        set(value: String) {
+            emailElement.waitUntilVisible()
+            emailElement.clear()
+            emailElement.sendKeys(value)
+        }
+
+    /** Whether the form is a success or not */
+    val success: Boolean
+        get() {
+            return try {
+                successElement.waitUntilVisible()
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
+
+    /**
+     * Save the form
+     */
+    fun saveChanges() {
+        saveElement.click()
+    }
 }
