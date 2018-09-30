@@ -1,4 +1,4 @@
-FROM openjdk:10.0.1-10-jdk-slim-sid
+FROM openjdk:11-jdk-slim-sid
 
 RUN apt update && apt install -y curl gettext-base
 
