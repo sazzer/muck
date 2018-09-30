@@ -1,0 +1,106 @@
+version: '3'
+services:
+    muck-e2e-neo4j:
+        image: neo4j:3.4.5
+        environment:
+            - NEO4J_dbms_security_auth__enabled=false
+            - NEO4J_dbms_logs_debug_level=DEBUG
+        ports:
+            - "7474:7474"
+            - "7687:7687"
+        networks:
+            - muck-e2e
+
+    muck-e2e-fakeauth:
+        image: sazzer/fakeauth
+        ports:
+            - "3000:3000"
+        networks:
+            - muck-e2e
+
+    muck-e2e-service:
+        image: muck/service:0.0.1-SNAPSHOT
+        links:
+            - muck-e2e-neo4j:neo4j
+            - muck-e2e-fakeauth:fakeauth.muck
+        ports:
+            - "8080:8080"
+        environment:
+            - NEO4J_URI=bolt://neo4j:7687
+            - MUCK_GOOGLE_ENABLED=true
+            - MUCK_GOOGLE_AUTH_URI=http://fakeauth.muck:3000/google/o/oauth2/v2/auth
+            - MUCK_GOOGLE_TOKEN_URI=http://fakeauth.muck:3000/google/oauth2/v4/token
+            - MUCK_GOOGLE_REDIRECT_URI=http://api.muck:8080/api/authentication/external/google/callback
+            - MUCK_GOOGLE_CLIENT_ID=googleClientId
+            - MUCK_GOOGLE_CLIENT_SECRET=googleClientSecret
+        networks:
+            - muck-e2e
+
+    muck-e2e-webapp:
+        image: muck/webapp:0.0.1-SNAPSHOT
+        links:
+            - muck-e2e-fakeauth:fakeauth
+        ports: 
+            - "8000:80"
+        environment:
+            - MUCK_SERVICE_API_URI=http://api.muck:8080/api
+        networks:
+            - muck-e2e
+
+    muck-e2e-selenium-hub:
+        image: selenium/hub
+        ports:
+            - "4444:4444"
+        networks:
+            - muck-e2e
+
+    muck-e2e-selenium-chrome:
+        image: selenium/node-chrome
+        links:
+            - muck-e2e-service:api.muck
+            - muck-e2e-webapp:www.muck
+            - muck-e2e-fakeauth:fakeauth.muck
+            - muck-e2e-selenium-hub:selenium.muck
+            - muck-e2e-neo4j:neo4j.muck
+        environment:
+            - WWW_HOST=www.muck
+            - API_HOST=api.muck
+            - HUB_HOST=selenium.muck
+        networks:
+            - muck-e2e
+
+    muck-e2e-selenium-firefox:
+        image: selenium/node-firefox
+        links:
+            - muck-e2e-service:api.muck
+            - muck-e2e-webapp:www.muck
+            - muck-e2e-fakeauth:fakeauth.muck
+            - muck-e2e-selenium-hub:selenium.muck
+            - muck-e2e-neo4j:neo4j.muck
+        environment:
+            - WWW_HOST=www.muck
+            - API_HOST=api.muck
+            - HUB_HOST=selenium.muck
+        networks:
+            - muck-e2e
+
+    muck-e2e:
+        image: muck/e2e:0.0.1-SNAPSHOT
+        links:
+            - muck-e2e-service:api.muck
+            - muck-e2e-webapp:www.muck
+            - muck-e2e-fakeauth:fakeauth.muck
+            - muck-e2e-selenium-hub:selenium.muck
+            - muck-e2e-neo4j:neo4j.muck
+        environment:
+            - WWW_HOST=www.muck
+            - API_HOST=api.muck:8080
+            - SELENIUM_HOST=selenium.muck:4444
+            - NEO4J_HOST=neo4j.muck:7687
+            - BROWSERS=firefox
+        volumes:
+            - ./target/e2e-reports:/opt/muck/target
+        networks:
+            - muck-e2e
+networks:
+    muck-e2e:

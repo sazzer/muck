@@ -41,7 +41,7 @@ export class UserProfileScreen extends React.Component<UserProfileScreenProps> {
                         ];
 
                         return (
-                            <Container>
+                            <Container data-test='user-profile-page'>
                                 <UserProfileHeader user={this.props.user} />
                                 <Tab menu={{fluid: true, vertical: true, tabular: true}} panes={panes} />
                             </Container>
