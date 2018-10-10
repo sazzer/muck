@@ -2,7 +2,11 @@
 
 import { loadResource } from './hal';
 import type {Resource} from "./hal";
+import requester from './requester';
+
 export { loadResource, putResource } from './hal';
+export { buildUri } from './urlBuilder';
+export default requester;
 
 /** The API Root */
 let apiRoot: Promise<Resource>;
