@@ -90,6 +90,7 @@ class UserController(private val userService: UserService) {
      */
     private fun translateUserResource(user: UserResource): UserModel {
         return UserModel(
+                id = user.identity.id.id,
                 email = user.data.email,
                 displayName = user.data.displayName,
                 logins = user.data.logins

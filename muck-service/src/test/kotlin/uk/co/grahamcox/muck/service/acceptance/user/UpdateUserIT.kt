@@ -112,6 +112,7 @@ class UpdateUserIT : AcceptanceTestBase() {
                             "type": "application/hal+json"
                         }
                     },
+                    "id": "$USER_ID",
                     "email": "new@user.com",
                     "displayName": "New User",
                     "logins": [
@@ -146,6 +147,7 @@ class UpdateUserIT : AcceptanceTestBase() {
                             "type": "application/hal+json"
                         }
                     },
+                    "id": "$USER_ID",
                     "email": "new@user.com",
                     "displayName": "New User",
                     "logins": [

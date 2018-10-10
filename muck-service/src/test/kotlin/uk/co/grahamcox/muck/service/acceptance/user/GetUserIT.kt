@@ -120,6 +120,7 @@ class GetUserIT : AcceptanceTestBase() {
                             "type": "application/hal+json"
                         }
                     },
+                    "id": "$USER_ID",
                     "email": "test@example.com",
                     "displayName": "Test User",
                     "logins": [

@@ -3,6 +3,7 @@ package uk.co.grahamcox.muck.service.user.rest
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import uk.co.grahamcox.muck.service.rest.hal.Link
+import java.util.*
 
 /**
  * The HAL links for a User
@@ -25,6 +26,7 @@ data class UserLoginModel(
  */
 data class UserModel(
         @JsonProperty("_links") val links: UserLinks,
+        val id: UUID,
         val email: String?,
         val displayName: String,
         val logins: List<UserLoginModel>
