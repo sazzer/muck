@@ -64,7 +64,10 @@ class ExternalAuthenticationController(
                                             type = null
                                     )
                                 }
-                )
+                ),
+                services = authenticationServices
+                        .map { it.id }
+                        .sorted()
         )
 
         return ResponseEntity.ok()

@@ -15,5 +15,6 @@ data class ExternalAthenticationServicesLinks(
  * The API model representing the External Authentication Services
  */
 data class ExternalAuthenticationServicesModel(
-    @JsonProperty("_links") val links: ExternalAthenticationServicesLinks
+    @JsonProperty("_links") val links: ExternalAthenticationServicesLinks,
+    val services: List<String>
 )
