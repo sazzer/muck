@@ -14,7 +14,7 @@ import java.time.Instant
 import java.util.*
 
 /**
- * Implementation of the User Service in terms of the Spring Data Repository
+ * Implementation of the User Service in terms of the Neo4J database
  */
 @Transactional
 class UserServiceImpl(

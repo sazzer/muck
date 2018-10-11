@@ -8,6 +8,7 @@ import org.springframework.web.client.RestTemplate
 import uk.co.grahamcox.muck.service.authentication.external.spring.ExternalAuthenticationConfig
 import uk.co.grahamcox.muck.service.authentication.spring.AuthenticationConfig
 import uk.co.grahamcox.muck.service.authorization.spring.AuthorizationConfig
+import uk.co.grahamcox.muck.service.characters.attributes.spring.AttributeConfig
 import uk.co.grahamcox.muck.service.database.DatabaseConfig
 import uk.co.grahamcox.muck.service.rest.ProblemResponseBodyAdvice
 import uk.co.grahamcox.muck.service.rest.validation.ValidationControllerAdvice
@@ -24,6 +25,7 @@ import java.time.Clock
         AuthenticationConfig::class,
         AuthorizationConfig::class,
         ExternalAuthenticationConfig::class,
+        AttributeConfig::class,
         WebMvcConfig::class
 )
 class MuckConfig(context: GenericApplicationContext) {
