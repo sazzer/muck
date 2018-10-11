@@ -36,7 +36,10 @@ class ListServicesIT : AcceptanceTestBase() {
                                 "templated": false
                             }
                         ]
-                    }
+                    },
+                    "services": [
+                        "google"
+                    ]
                 }"""), response.getValue("/body")) }
         )
     }

@@ -4,9 +4,7 @@ import * as testSubject from '../userProfiles';
 import type {StoreUserProfileAction} from "../userProfiles";
 
 const user = {
-    links: {
-        self: 'http://example.com',
-    },
+    id: 'abc123',
     data: {
         displayName: 'Test User',
     },
@@ -66,7 +64,7 @@ describe('storeUserProfileMutation', () => {
 
         expect(state).toEqual({
             users: {
-                'http://example.com': user
+                [user.id]: user
             }
         });
     });

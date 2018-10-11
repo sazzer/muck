@@ -21,7 +21,7 @@
         var message = {
             message: 'authenticationResult',
             params: {
-                userId: '{{userId}}',
+                userId: '{{user.identity.id.id}}',
                 bearerToken: '{{bearerToken}}',
                 expires: new Date('{{accessToken.expires}}')
             }

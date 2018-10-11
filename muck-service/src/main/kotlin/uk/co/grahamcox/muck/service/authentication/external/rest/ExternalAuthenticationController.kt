@@ -13,7 +13,6 @@ import uk.co.grahamcox.muck.service.authentication.rest.AccessTokenSerializer
 import uk.co.grahamcox.muck.service.rest.Problem
 import uk.co.grahamcox.muck.service.rest.hal.Link
 import uk.co.grahamcox.muck.service.rest.hal.buildUri
-import uk.co.grahamcox.muck.service.user.rest.UserController
 import java.net.URI
 
 /**
@@ -106,7 +105,6 @@ class ExternalAuthenticationController(
 
         val result = ModelAndView("authenticated")
         result.addObject("user", user)
-        result.addObject("userId", UserController::getUser.buildUri("rawUserId" to user.identity.id.id))
         result.addObject("accessToken", accessToken)
         result.addObject("bearerToken", bearerToken)
 

@@ -1,7 +1,7 @@
 // @flow
 
 import axios from 'axios';
-import getConfig from '../config';
+import {buildUri} from "./urlBuilder";
 
 /** The access token used to access the service */
 let bearerToken;
@@ -33,10 +33,11 @@ export default function request(config: RequestConfig): Promise<Response> {
     }
 
     return axios.request({
-        baseURL: getConfig('API_URI'),
+        url: buildUri(config.url, config.params),
         timeout: 5000,
         headers,
-        ...config
+        method: config.method || 'GET',
+        data: config.data
     });
 }
 
