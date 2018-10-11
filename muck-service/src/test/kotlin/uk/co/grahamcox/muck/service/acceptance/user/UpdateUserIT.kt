@@ -105,13 +105,7 @@ class UpdateUserIT : AcceptanceTestBase() {
                 Executable { Assertions.assertTrue(response.headers.contentType!!.isCompatibleWith(MediaType.valueOf("application/hal+json"))) },
 
                 Executable { Assertions.assertEquals(convertFromJson("""{
-                    "_links": {
-                        "self": {
-                            "href": "${buildUri("/api/users/$USER_ID")}",
-                            "templated": false,
-                            "type": "application/hal+json"
-                        }
-                    },
+                    "id": "$USER_ID",
                     "email": "new@user.com",
                     "displayName": "New User",
                     "logins": [
@@ -139,13 +133,7 @@ class UpdateUserIT : AcceptanceTestBase() {
                 Executable { Assertions.assertTrue(response.headers.contentType!!.isCompatibleWith(MediaType.valueOf("application/hal+json"))) },
 
                 Executable { Assertions.assertEquals(convertFromJson("""{
-                    "_links": {
-                        "self": {
-                            "href": "${buildUri("/api/users/$USER_ID")}",
-                            "templated": false,
-                            "type": "application/hal+json"
-                        }
-                    },
+                    "id": "$USER_ID",
                     "email": "new@user.com",
                     "displayName": "New User",
                     "logins": [

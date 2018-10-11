@@ -2,8 +2,11 @@
 
 /** The type to represent a user */
 import {call, put} from 'redux-saga/effects';
-import {loadResource, putResource} from "../api";
+import requester from "../api";
 import type {Errors} from '../errors';
+
+/** The URI Template for accessing a User Profile */
+const USER_PROFILE_URI_TEMPLATE = '/users/{userId}';
 
 /**
  * Type representing the details of a login with a provider
@@ -13,13 +16,6 @@ export type UserLogin = {
     providerId: string,
     displayName: string
 }
-
-/**
- * Type representing the Hypermedia links to other resources
- */
-export type UserLinks = {
-    self: string
-};
 
 /**
  * Type representing the data of a user
@@ -33,7 +29,7 @@ export type UserData = {
  * Type representing a user
  */
 export type UserProfile = {
-    links: UserLinks,
+    id: string,
     data: UserData,
     logins: Array<UserLogin>
 };
@@ -137,12 +133,15 @@ export function selectUserById(state: UserProfilesState, userId: string) : ?User
  * Saga for actually loading the authentication services services from the server
  */
 export function* loadUserProfileSaga(action: LoadUserProfileAction): Generator<any, any, any> {
-    const user = yield call(loadResource, action.payload.userId);
+    const user = yield call(requester, {
+        url: USER_PROFILE_URI_TEMPLATE,
+        params: {
+            userId: action.payload.userId
+        }
+    });
 
     const userProfile: UserProfile = {
-        links: {
-            self: user.getLink('self').href
-        },
+        id: action.payload.userId,
         data: {
             email: user.data.email,
             displayName: user.data.displayName,
@@ -157,8 +156,13 @@ export function* loadUserProfileSaga(action: LoadUserProfileAction): Generator<a
  */
 export function* updateUserProfileSaga(action: UpdateUserProfileAction): Generator<*, *, *> {
     try {
-        const savedUser = yield call(putResource, action.payload.userId, {
-            resource: {
+        const savedUser = yield call(requester, {
+            url: USER_PROFILE_URI_TEMPLATE,
+            params: {
+                userId: action.payload.userId
+            },
+            method: 'PUT',
+            data: {
                 email: action.payload.data.email,
                 displayName: action.payload.data.displayName,
                 logins: action.payload.logins
@@ -166,9 +170,7 @@ export function* updateUserProfileSaga(action: UpdateUserProfileAction): Generat
         });
 
         const userProfile: UserProfile = {
-            links: {
-                self: savedUser.getLink('self').href
-            },
+            id: action.payload.userId,
             data: {
                 email: savedUser.data.email,
                 displayName: savedUser.data.displayName,
@@ -199,7 +201,7 @@ export function* updateUserProfileSaga(action: UpdateUserProfileAction): Generat
  * @param action the action to update from
  */
 export function storeUserProfileMutation(state: UserProfilesState, action: StoreUserProfileAction) {
-    state.users[action.payload.user.links.self] = action.payload.user;
+    state.users[action.payload.user.id] = action.payload.user;
 }
 
 /** The representation of this sub-module */

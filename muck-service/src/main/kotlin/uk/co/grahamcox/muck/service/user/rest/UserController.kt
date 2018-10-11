@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.*
 import uk.co.grahamcox.muck.service.authorization.Authorizer
 import uk.co.grahamcox.muck.service.database.ResourceNotFoundException
 import uk.co.grahamcox.muck.service.rest.Problem
-import uk.co.grahamcox.muck.service.rest.hal.Link
-import uk.co.grahamcox.muck.service.rest.hal.buildUri
 import uk.co.grahamcox.muck.service.user.*
 import java.net.URI
 import java.util.*
@@ -90,6 +88,7 @@ class UserController(private val userService: UserService) {
      */
     private fun translateUserResource(user: UserResource): UserModel {
         return UserModel(
+                id = user.identity.id.id,
                 email = user.data.email,
                 displayName = user.data.displayName,
                 logins = user.data.logins
@@ -102,12 +101,8 @@ class UserController(private val userService: UserService) {
                         }
                         .sortedWith(compareBy(UserLoginModel::provider,
                                 UserLoginModel::displayName,
-                                UserLoginModel::providerId)),
-                links = UserLinks(
-                        self = Link(
-                                href = ::getUser.buildUri("rawUserId" to user.identity.id.id)
+                                UserLoginModel::providerId)
                         )
-                )
         )
     }
 }

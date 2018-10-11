@@ -11,9 +11,6 @@ import uk.co.grahamcox.muck.service.authentication.AccessTokenGenerator
 import uk.co.grahamcox.muck.service.authentication.external.AuthenticationService
 import uk.co.grahamcox.muck.service.authentication.rest.AccessTokenSerializer
 import uk.co.grahamcox.muck.service.rest.Problem
-import uk.co.grahamcox.muck.service.rest.hal.Link
-import uk.co.grahamcox.muck.service.rest.hal.buildUri
-import uk.co.grahamcox.muck.service.user.rest.UserController
 import java.net.URI
 
 /**
@@ -50,21 +47,9 @@ class ExternalAuthenticationController(
     @ResponseBody
     fun getProviders(): ResponseEntity<ExternalAuthenticationServicesModel> {
         val result = ExternalAuthenticationServicesModel(
-                links = ExternalAthenticationServicesLinks(
-                        self = Link(
-                                href = ::getProviders.buildUri()
-                        ),
-                        services = authenticationServices
-                                .map { it.id }
-                                .sorted()
-                                .map {
-                                    Link(
-                                            href = ::startAuthentication.buildUri("service" to it),
-                                            name = it,
-                                            type = null
-                                    )
-                                }
-                )
+                services = authenticationServices
+                        .map { it.id }
+                        .sorted()
         )
 
         return ResponseEntity.ok()
@@ -103,7 +88,6 @@ class ExternalAuthenticationController(
 
         val result = ModelAndView("authenticated")
         result.addObject("user", user)
-        result.addObject("userId", UserController::getUser.buildUri("rawUserId" to user.identity.id.id))
         result.addObject("accessToken", accessToken)
         result.addObject("bearerToken", bearerToken)
 

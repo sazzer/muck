@@ -20,13 +20,8 @@ describe('selectAuthenticationServices', () => {
         const state = {
             ...testSubject.module.initialState,
             services: [
-                {
-                    name: 'google',
-                    href: '/google'
-                }, {
-                    name: 'twitter',
-                    href: '/twitter'
-                }
+                'google',
+                'twitter'
             ]
         };
 
@@ -45,10 +40,7 @@ describe('storeAuthenticationServicesMutation', () => {
             type: '',
             payload: {
                 services: [
-                    {
-                        name: 'google',
-                        href: '/google'
-                    }
+                    'google'
                 ]
             }
         };
@@ -56,96 +48,40 @@ describe('storeAuthenticationServicesMutation', () => {
 
         expect(state).toEqual({
             services: [
-                {
-                    name: 'google',
-                    href: '/google'
-                }
+                'google'
             ]
         });
     });
 });
 
 describe('loadAuthenticationServicesSaga', () => {
-    describe('When The Auth Services endpoint is not available', () => {
-        const gen = testSubject.loadAuthenticationServicesSaga();
-
-        it('Yields to get the API Root', () => {
-            const getApiRootYield = gen.next();
-            expect(getApiRootYield.done).toBeFalsy();
-            expect(getApiRootYield.value).toEqual(call(api.getApiRoot));
-        });
-
-        it('Yields that we\'ve finished', () => {
-            const loadResourceResponse = {
-                getLink: jest.fn()
-            };
-            loadResourceResponse.getLink.mockReturnValueOnce(undefined);
-
-            const loadResourceYield = gen.next(loadResourceResponse);
-
-            expect(loadResourceResponse.getLink).toHaveBeenCalledTimes(1);
-            expect(loadResourceResponse.getLink).toBeCalledWith('externalAuthenticationServices');
-
-            expect(loadResourceYield.done).toBeTruthy();
-            expect(loadResourceYield.value).toBeUndefined();
-        });
-    });
     describe('When Auth Services are available', () => {
         const gen = testSubject.loadAuthenticationServicesSaga();
 
-        it('Yields to get the API Root', () => {
-            const getApiRootYield = gen.next();
-            expect(getApiRootYield.done).toBeFalsy();
-            expect(getApiRootYield.value).toEqual(call(api.getApiRoot));
-        });
-
         it('Yields to load the External Authentication Services resource', () => {
-            const loadResourceResponse = {
-                getLink: jest.fn()
-            };
-            loadResourceResponse.getLink.mockReturnValueOnce({
-                'href': '/externalAuthServices'
-            });
-
-            const loadResourceYield = gen.next(loadResourceResponse);
-
-            expect(loadResourceResponse.getLink).toHaveBeenCalledTimes(1);
-            expect(loadResourceResponse.getLink).toBeCalledWith('externalAuthenticationServices');
+            const loadResourceYield = gen.next();
 
             expect(loadResourceYield.done).toBeFalsy();
-            expect(loadResourceYield.value).toEqual(call(api.loadResource, '/externalAuthServices'));
+            expect(loadResourceYield.value).toEqual(call(api.default, {url: '/authentication/external'}));
         });
 
-        it('Yields to store the Authenticaiton Services', () => {
-            const loadResourceResponse = {
-                getLinks: jest.fn()
-            };
-            loadResourceResponse.getLinks.mockReturnValueOnce([
-                {
-                    name: 'google',
-                    href: '/google'
-                }, {
-                    name: 'twitter',
-                    href: '/twitter'
+        it('Yields to store the Authentication Services', () => {
+            const loadResourceYield = gen.next({
+                data: {
+                    services: [
+                        'google',
+                        'twitter'
+                    ]
                 }
-            ]);
-            const loadResourceYield = gen.next(loadResourceResponse);
-
-            expect(loadResourceResponse.getLinks).toHaveBeenCalledTimes(1);
-            expect(loadResourceResponse.getLinks).toBeCalledWith('services');
+            });
 
             expect(loadResourceYield.done).toBeFalsy();
             expect(loadResourceYield.value).toEqual(put({
                 type: 'AUTH/STORE_AUTHENTICATION_SERVICES_ACTION',
                 payload: {
                     services: [
-                        {
-                            name: 'google',
-                            href: '/google'
-                        }, {
-                            name: 'twitter',
-                            href: '/twitter'
-                        }
+                        'google',
+                        'twitter'
                     ]
                 }
             }));
@@ -160,38 +96,19 @@ describe('loadAuthenticationServicesSaga', () => {
     describe('When No Auth Services are available', () => {
         const gen = testSubject.loadAuthenticationServicesSaga();
 
-        it('Yields to get the API Root', () => {
-            const getApiRootYield = gen.next();
-            expect(getApiRootYield.done).toBeFalsy();
-            expect(getApiRootYield.value).toEqual(call(api.getApiRoot));
-        });
-
         it('Yields to load the External Authentication Services resource', () => {
-            const loadResourceResponse = {
-                getLink: jest.fn()
-            };
-            loadResourceResponse.getLink.mockReturnValueOnce({
-                'href': '/externalAuthServices'
-            });
-
-            const loadResourceYield = gen.next(loadResourceResponse);
-
-            expect(loadResourceResponse.getLink).toHaveBeenCalledTimes(1);
-            expect(loadResourceResponse.getLink).toBeCalledWith('externalAuthenticationServices');
+            const loadResourceYield = gen.next();
 
             expect(loadResourceYield.done).toBeFalsy();
-            expect(loadResourceYield.value).toEqual(call(api.loadResource, '/externalAuthServices'));
+            expect(loadResourceYield.value).toEqual(call(api.default, {url: '/authentication/external'}));
         });
 
-        it('Yields to store the Authenticaiton Services', () => {
-            const loadResourceResponse = {
-                getLinks: jest.fn()
-            };
-            loadResourceResponse.getLinks.mockReturnValueOnce([]);
-            const loadResourceYield = gen.next(loadResourceResponse);
-
-            expect(loadResourceResponse.getLinks).toHaveBeenCalledTimes(1);
-            expect(loadResourceResponse.getLinks).toBeCalledWith('services');
+        it('Yields to store the Authentication Services', () => {
+            const loadResourceYield = gen.next({
+                data: {
+                    services: []
+                }
+            });
 
             expect(loadResourceYield.done).toBeFalsy();
             expect(loadResourceYield.value).toEqual(put({

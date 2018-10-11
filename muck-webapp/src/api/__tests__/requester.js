@@ -53,7 +53,7 @@ describe('GET', () => {
         let response;
 
         beforeEach(async () => {
-            mockAxios.onGet('http://example.com:8080/api/a/b', {params: {start: 1, end: 5}}).reply(200, {
+            mockAxios.onGet('http://example.com:8080/api/a/b?start=1&end=5').reply(200, {
                 users: [
                     { id: 1, name: 'John Smith' }
                 ]
@@ -62,7 +62,7 @@ describe('GET', () => {
             });
 
             response = await request({
-                url: '/a/b',
+                url: '/a/b{?start,end}',
                 params: {
                     start: 1,
                     end: 5

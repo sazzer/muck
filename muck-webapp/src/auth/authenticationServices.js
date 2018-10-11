@@ -1,24 +1,18 @@
 // @flow
 
 import { put, call } from 'redux-saga/effects';
-import { loadResource, getApiRoot } from "../api";
-
-/** The shape of a single authentication service */
-export type AuthenticationService = {
-    name: string,
-    href: string
-}
+import requester from "../api";
 
 /** The shape of the state for this sub-module */
 export type AuthenticationServicesState = {
-    services: Array<AuthenticationService>
+    services: Array<string>
 };
 
 /** The shape of the action for storing authentication services */
 export type StoreAuthenticationServicesAction = {
     type: string,
     payload: {
-        services: Array<AuthenticationService>
+        services: Array<string>
     }
 };
 
@@ -34,35 +28,23 @@ const STORE_AUTHENTICATION_SERVICES_ACTION = "AUTH/STORE_AUTHENTICATION_SERVICES
  * @return The list of authentication service names
  */
 export function selectAuthenticationServices(state: AuthenticationServicesState): Array<string> {
-    return state.services.map(service => service.name);
-}
-
-/**
- * Selector to get the single authentication service with the given name, if there is one
- * @param state the state to interrogate
- * @param serviceName the name of the service
- * @return The service details, if found
- */
-export function selectAuthenticationService(state: AuthenticationServicesState, serviceName: string): ?AuthenticationService {
-    return state.services.find(service => service.name === serviceName);
+    return state.services;
 }
 
 /**
  * Saga for actually loading the authentication services services from the server
  */
 export function* loadAuthenticationServicesSaga(): Generator<any, any, any> {
-    const apiDetails = yield call(getApiRoot);
-    const authServicesLink = apiDetails.getLink('externalAuthenticationServices');
-    if (authServicesLink) {
-        const authServices = yield call(loadResource, authServicesLink.href);
-        const services = authServices.getLinks('services');
-        yield put({
-            type: STORE_AUTHENTICATION_SERVICES_ACTION,
-            payload: {
-                services: services
-            }
-        })
-    }
+    const authServices = yield call(requester, {
+        url: '/authentication/external'
+    });
+
+    yield put({
+        type: STORE_AUTHENTICATION_SERVICES_ACTION,
+        payload: {
+            services: authServices.data.services
+        }
+    });
 }
 
 /**

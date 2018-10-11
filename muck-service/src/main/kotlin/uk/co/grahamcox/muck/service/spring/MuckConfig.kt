@@ -9,7 +9,6 @@ import uk.co.grahamcox.muck.service.authentication.external.spring.ExternalAuthe
 import uk.co.grahamcox.muck.service.authentication.spring.AuthenticationConfig
 import uk.co.grahamcox.muck.service.authorization.spring.AuthorizationConfig
 import uk.co.grahamcox.muck.service.database.DatabaseConfig
-import uk.co.grahamcox.muck.service.home.spring.HomeConfig
 import uk.co.grahamcox.muck.service.rest.ProblemResponseBodyAdvice
 import uk.co.grahamcox.muck.service.rest.validation.ValidationControllerAdvice
 import uk.co.grahamcox.muck.service.user.spring.UserConfig
@@ -25,7 +24,6 @@ import java.time.Clock
         AuthenticationConfig::class,
         AuthorizationConfig::class,
         ExternalAuthenticationConfig::class,
-        HomeConfig::class,
         WebMvcConfig::class
 )
 class MuckConfig(context: GenericApplicationContext) {
