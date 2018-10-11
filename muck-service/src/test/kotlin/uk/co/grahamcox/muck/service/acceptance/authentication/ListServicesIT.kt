@@ -23,20 +23,6 @@ class ListServicesIT : AcceptanceTestBase() {
                 Executable { Assertions.assertTrue(response.headers.contentType!!.isCompatibleWith(MediaType.valueOf("application/hal+json"))) },
 
                 Executable { Assertions.assertEquals(convertFromJson("""{
-                    "_links": {
-                        "self": {
-                            "href": "${buildUri("/api/authentication/external/")}",
-                            "templated": false,
-                            "type": "application/hal+json"
-                        },
-                        "services": [
-                            {
-                                "name": "google",
-                                "href": "${buildUri("/api/authentication/external/google/start")}",
-                                "templated": false
-                            }
-                        ]
-                    },
                     "services": [
                         "google"
                     ]
