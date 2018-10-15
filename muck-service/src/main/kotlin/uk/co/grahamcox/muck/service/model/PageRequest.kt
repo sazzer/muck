@@ -5,6 +5,6 @@ package uk.co.grahamcox.muck.service.model
  */
 data class PageRequest<out SORTFIELD>(
         val sorts : List<Sort<SORTFIELD>> = emptyList(),
-        val offset : Long = 0,
-        val pageSize : Long = Long.MAX_VALUE
+        val offset : Int = 0,
+        val pageSize : Int = Int.MAX_VALUE
 )

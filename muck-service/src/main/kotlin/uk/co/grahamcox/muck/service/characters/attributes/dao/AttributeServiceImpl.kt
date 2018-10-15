@@ -6,10 +6,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.transaction.annotation.Transactional
 import uk.co.grahamcox.muck.service.characters.attributes.*
 import uk.co.grahamcox.muck.service.database.Neo4jOperations
+import uk.co.grahamcox.muck.service.database.PageCallback
 import uk.co.grahamcox.muck.service.database.ResourceNotFoundException
+import uk.co.grahamcox.muck.service.database.queryPage
 import uk.co.grahamcox.muck.service.model.Identity
 import uk.co.grahamcox.muck.service.model.Page
 import uk.co.grahamcox.muck.service.model.PageRequest
+import uk.co.grahamcox.muck.service.model.SortDirection
 import java.time.Instant
 import java.util.*
 
@@ -23,6 +26,12 @@ class AttributeServiceImpl(
     companion object {
         /** The logger to use */
         private val LOG = LoggerFactory.getLogger(AttributeServiceImpl::class.java)
+
+        /** The set of sort directions */
+        private val SORT_DIRECTIONS = mapOf(
+                SortDirection.ASCENDING to "",
+                SortDirection.DESCENDING to "DESC"
+        )
     }
 
     /**
@@ -54,6 +63,68 @@ class AttributeServiceImpl(
     }
 
     /**
+     * Get a list of all the attributes
+     * @param pageRequest The pagination details
+     * @return the requested page of attributes
+     */
+    override fun list(pageRequest: PageRequest<AttributeSort>): Page<AttributeResource> {
+        LOG.debug("Listing attributes: {}", pageRequest)
+
+        return queryPage(pageRequest.offset, pageRequest.pageSize, object : PageCallback<AttributeResource> {
+            /**
+             * Get the page of records as defined by the provided parameters
+             * @param offset The offset of the first record on the page
+             * @param count The count of records to get
+             * @return the matching records
+             */
+            override fun getPage(offset: Long, count: Long): List<AttributeResource> {
+                val sorts = if (pageRequest.sorts.isEmpty()) {
+                    "attribute.name"
+                } else {
+                    pageRequest.sorts.map {
+                        val dir = SORT_DIRECTIONS[it.direction] ?: ""
+
+                        when (it.field) {
+                            AttributeSort.NAME -> "attribute.name $dir"
+                        }
+                    }.joinToString(", ")
+                }
+
+                val query = """
+                    MATCH
+                        (attribute:ATTRIBUTE)
+                    RETURN
+                        attribute
+                    ORDER BY $sorts
+                    SKIP {offset} LIMIT {count}
+                """
+
+                return neo4jOperations.query(query, mapOf(
+                        "offset" to offset,
+                        "count" to count
+                ), ::parseAttributeRecord)
+            }
+
+            /**
+             * Get the total number of records
+             * @return the total number of records
+             */
+            override fun getTotal(): Int {
+                val query = """
+                    MATCH
+                        (attribute:ATTRIBUTE)
+                    RETURN
+                        COUNT(attribute) as count
+                """
+
+                return neo4jOperations.queryOne(query, emptyMap()) {
+                    it.get("count").asInt()
+                }
+            }
+        })
+    }
+
+    /**
      * Parse a single Neo4J record that represents an Attribute record
      */
     private fun parseAttributeRecord(record: Record): AttributeResource {
@@ -71,14 +142,5 @@ class AttributeServiceImpl(
                         description = attribute.get("description").asString()
                 )
         )
-    }
-
-    /**
-     * Get a list of all the attributes
-     * @param pageRequest The pagination details
-     * @return the requested page of attributes
-     */
-    override fun list(pageRequest: PageRequest<AttributeSort>): Page<AttributeResource> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
