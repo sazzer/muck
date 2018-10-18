@@ -1,8 +1,6 @@
 package uk.co.grahamcox.muck.service.user.rest
 
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import uk.co.grahamcox.muck.service.authorization.Authorizer
 import uk.co.grahamcox.muck.service.database.ResourceNotFoundException
@@ -34,7 +32,7 @@ class UserController(private val userService: UserService) {
     @RequestMapping("/{id}", method = [RequestMethod.GET])
     fun getUser(@PathVariable("id") rawUserId: UUID,
                 currentUser: UserId,
-                authorizer: Authorizer) : ResponseEntity<UserModel> {
+                authorizer: Authorizer) : UserModel {
         val userId = UserId(rawUserId)
 
         authorizer {
@@ -42,10 +40,7 @@ class UserController(private val userService: UserService) {
         }
 
         val user = userService.getById(userId)
-        val result = translateUserResource(user)
-        return ResponseEntity.ok()
-                .contentType(MediaType.valueOf("application/hal+json"))
-                .body(result)
+        return translateUserResource(user)
     }
 
     /**
@@ -55,7 +50,7 @@ class UserController(private val userService: UserService) {
     fun updateUser(@PathVariable("id") rawUserId: UUID,
                    @RequestBody userData: UserInputModel,
                    currentUser: UserId,
-                   authorizer: Authorizer) : ResponseEntity<UserModel> {
+                   authorizer: Authorizer) : UserModel {
         val userId = UserId(rawUserId)
 
         authorizer {
@@ -75,10 +70,7 @@ class UserController(private val userService: UserService) {
                 }.toSet()
         ))
 
-        val result = translateUserResource(updated)
-        return ResponseEntity.ok()
-                .contentType(MediaType.valueOf("application/hal+json"))
-                .body(result)
+        return translateUserResource(updated)
     }
 
     /**

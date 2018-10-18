@@ -20,7 +20,7 @@ class ListServicesIT : AcceptanceTestBase() {
 
         Assertions.assertAll(
                 Executable { Assertions.assertEquals(HttpStatus.OK, response.statusCode) },
-                Executable { Assertions.assertTrue(response.headers.contentType!!.isCompatibleWith(MediaType.valueOf("application/hal+json"))) },
+                Executable { Assertions.assertTrue(response.headers.contentType!!.isCompatibleWith(MediaType.APPLICATION_JSON)) },
 
                 Executable { Assertions.assertEquals(convertFromJson("""{
                     "services": [

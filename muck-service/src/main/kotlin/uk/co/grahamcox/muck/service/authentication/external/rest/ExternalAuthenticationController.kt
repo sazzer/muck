@@ -1,7 +1,6 @@
 package uk.co.grahamcox.muck.service.authentication.external.rest
 
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.transaction.annotation.Transactional
@@ -45,16 +44,14 @@ class ExternalAuthenticationController(
      */
     @RequestMapping(method = [RequestMethod.GET])
     @ResponseBody
-    fun getProviders(): ResponseEntity<ExternalAuthenticationServicesModel> {
+    fun getProviders(): ExternalAuthenticationServicesModel {
         val result = ExternalAuthenticationServicesModel(
                 services = authenticationServices
                         .map { it.id }
                         .sorted()
         )
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.valueOf("application/hal+json"))
-                .body(result)
+        return result
     }
 
     /**
