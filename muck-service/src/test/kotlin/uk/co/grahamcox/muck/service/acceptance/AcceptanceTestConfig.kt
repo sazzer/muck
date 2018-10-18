@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
+import uk.co.grahamcox.muck.service.acceptance.characters.attributes.AttributeTestConfig
 import uk.co.grahamcox.muck.service.acceptance.requester.RequesterConfig
 import uk.co.grahamcox.muck.service.acceptance.user.UserTestConfig
 import uk.co.grahamcox.muck.service.database.DatabaseCleaner
@@ -14,7 +15,8 @@ import uk.co.grahamcox.muck.service.database.DatabaseCleaner
 @Configuration
 @Import(
         RequesterConfig::class,
-        UserTestConfig::class
+        UserTestConfig::class,
+        AttributeTestConfig::class
 )
 class AcceptanceTestConfig(context: GenericApplicationContext) {
     init {
