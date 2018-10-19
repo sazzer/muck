@@ -6,6 +6,8 @@ import uk.co.grahamcox.muck.service.characters.attributes.AttributeId
 import uk.co.grahamcox.muck.service.characters.attributes.AttributeResource
 import uk.co.grahamcox.muck.service.characters.attributes.AttributeRetriever
 import uk.co.grahamcox.muck.service.database.ResourceNotFoundException
+import uk.co.grahamcox.muck.service.model.PageRequest
+import uk.co.grahamcox.muck.service.rest.PageModel
 import uk.co.grahamcox.muck.service.rest.Problem
 import java.net.URI
 import java.util.*
@@ -35,6 +37,24 @@ class AttributeController(private val attributeRetriever: AttributeRetriever) {
         val attribute = attributeRetriever.getById(AttributeId(rawId))
 
         return translateAttributeResource(attribute)
+    }
+
+    /**
+     * Get a list of all matching attributes
+     */
+    @RequestMapping(method = [RequestMethod.GET])
+    fun listAttributes() : PageModel<AttributeModel> {
+        val attributes = attributeRetriever.list(PageRequest(
+                sorts = emptyList(),
+                offset = 0,
+                pageSize = 10
+        ))
+
+        return PageModel(
+                data = attributes.data.map(this::translateAttributeResource),
+                offset = attributes.offset,
+                total = attributes.total
+        )
     }
 
     /**

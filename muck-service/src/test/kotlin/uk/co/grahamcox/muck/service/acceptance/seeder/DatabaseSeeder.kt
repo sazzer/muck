@@ -26,7 +26,7 @@ class DatabaseSeeder(
     /**
      * Seed a record with the given data
      */
-    fun seed(params: Map<String, Any?>) {
+    fun seed(params: Map<String, Any?>): Map<String, Any?> {
         val unknownParams = params.keys.filterNot(seedParams::containsKey)
         if (unknownParams.isNotEmpty()) {
             throw IllegalArgumentException("Unknown params provided: $unknownParams")
@@ -41,5 +41,7 @@ class DatabaseSeeder(
         LOG.debug("Executing query {} with determined params {}", query, actualParams)
         val result = neo4jOperations.execute(query, actualParams)
         LOG.debug("Result of query: {}", result)
+
+        return actualParams
     }
 }
